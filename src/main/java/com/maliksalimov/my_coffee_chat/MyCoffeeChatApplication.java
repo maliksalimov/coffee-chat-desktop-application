@@ -5,8 +5,6 @@ import com.maliksalimov.my_coffee_chat.chat.CoffeeShop;
 import com.maliksalimov.my_coffee_chat.database.DatabaseUtil;
 import com.maliksalimov.my_coffee_chat.ui.ChatApplication;
 import javafx.application.Application;
-import org.springframework.boot.SpringApplication;
-import com.maliksalimov.my_coffee_chat.ui.ChatApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
