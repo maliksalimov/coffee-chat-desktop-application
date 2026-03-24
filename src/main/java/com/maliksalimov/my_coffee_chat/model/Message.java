@@ -10,7 +10,7 @@ import lombok.ToString;
 public class Message {
 
     private Long id;
-    private String text;
     private String sender;
+    private String text;
     private String timestamp;
 }
