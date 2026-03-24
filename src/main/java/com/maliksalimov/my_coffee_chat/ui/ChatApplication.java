@@ -14,6 +14,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.io.File;
 import java.util.List;
@@ -23,9 +25,9 @@ public class ChatApplication extends Application{
 
     private TextArea chatArea;
     private TextField messageField;
-    private ListView<String> imageList;
+    private ListView<ImageView> imageList;
     private Chat chat;
-    private ObservableList<String> uploadedImages = FXCollections.observableArrayList();
+    private ObservableList<ImageView> uploadedImages = FXCollections.observableArrayList();
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -74,15 +76,20 @@ public class ChatApplication extends Application{
     private void uploadImage(Stage stage){
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select an image");
-
         fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png", "*.gif", "*.jpeg")
+                new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png", "*.jpeg")
         );
 
         File file = fileChooser.showOpenDialog(stage);
 
-        if(file != null){
-            uploadedImages.add(file.getAbsolutePath());
+        if (file != null){
+            Image image = new Image(file.toURI().toString());
+            ImageView imageView = new ImageView(image);
+            imageView.setFitWidth(200);
+            imageView.setFitHeight(200);
+            imageView.setPreserveRatio(true);
+
+            uploadedImages.add(imageView);
             DatabaseUtil.saveMessage("User", "Uploaded image: " + file.getName());
             chatArea.appendText("User: Uploaded image: " + file.getName() + "\n");
         }
