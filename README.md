@@ -14,6 +14,7 @@ A multithreaded Java desktop application simulating a real-time coffee shop chat
 - [Getting Started](#getting-started)
 - [Usage](#usage)
 - [Database Schema](#database-schema)
+- [Testing](#testing)
 - [Design Decisions](#design-decisions)
 
 ---
@@ -84,9 +85,9 @@ Customer Input (JavaFX UI)
 | Spring Boot | 3.2.3 | Application framework and DI bootstrapping |
 | JavaFX | 21 | Desktop GUI (controls, layouts, CSS styling) |
 | SQLite (JDBC) | 3.45.1.0 | Embedded local database — zero configuration |
-| Lombok | Latest | Boilerplate reduction (getters, constructors) |
 | Gradle | 8+ | Build tool and dependency management |
-| JUnit 5 | via Spring Boot Starter | Unit testing |
+| JUnit 5 | 5.10.2 | Unit testing |
+| JaCoCo | bundled Gradle plugin | Test coverage reporting |
 
 ---
 
@@ -116,7 +117,12 @@ my_coffee_chat/
     │       └── application.properties
     └── test/
         └── java/com/maliksalimov/my_coffee_chat/
-            └── MyCoffeeChatApplicationTests.java
+            ├── ChatTest.java
+            ├── OrderQueueTest.java
+            ├── DatabaseUtilTest.java
+            ├── CoffeeShopTest.java
+            ├── MyCoffeeChatApplicationTests.java
+            └── TestDatabaseSupport.java
 ```
 
 ---
@@ -147,7 +153,7 @@ Gradle will automatically download all declared dependencies:
 - `org.xerial:sqlite-jdbc:3.45.1.0`
 - `org.openjfx:javafx-controls:21`
 - `org.openjfx:javafx-fxml:21`
-- `org.projectlombok:lombok`
+- `org.junit.jupiter:junit-jupiter:5.10.2`
 
 > No database setup required. `my_coffee.db` is created automatically on first launch.
 
@@ -208,6 +214,56 @@ CREATE TABLE IF NOT EXISTS messages (
 ```
 
 Both customer and barista messages are written to this table. On startup, all rows are fetched ordered by `id` to reconstruct the conversation history.
+
+---
+
+## Testing
+
+### Run Unit Tests
+
+```bash
+./gradlew test
+```
+
+### Generate Coverage Report
+
+```bash
+./gradlew jacocoTestReport
+```
+
+HTML report path:
+
+```text
+build/reports/jacoco/test/html/index.html
+```
+
+### Coverage in IntelliJ IDEA
+
+1. Open **Run** → **Edit Configurations**.
+2. Select a JUnit/Gradle test configuration.
+3. Run with **Run with Coverage**.
+4. Open **Coverage** tool window to inspect class and line coverage.
+
+### Coverage in Eclipse
+
+1. Install **EclEmma** from Eclipse Marketplace.
+2. Right-click project or test class.
+3. Choose **Coverage As** → **JUnit Test**.
+4. Review coverage highlighting in editors and the Coverage view.
+
+### Coverage in VS Code
+
+1. Install **Extension Pack for Java** and **Coverage Gutters**.
+2. Run `./gradlew test jacocoTestReport`.
+3. Open `build/reports/jacoco/test/html/index.html` for full report details.
+4. Use Coverage Gutters to visualize line-level coverage from generated reports.
+
+### Testing Best Practices Used in This Project
+
+- Isolation via `@BeforeEach` and `@AfterEach`.
+- Separate test classes by component (`Chat`, `OrderQueue`, `DatabaseUtil`, `CoffeeShop`).
+- Descriptive test method naming for readability.
+- Stable assertions for behavior, persistence, and singleton lifecycle checks.
 
 ---
 

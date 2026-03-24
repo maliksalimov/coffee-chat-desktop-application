@@ -1,7 +1,6 @@
 package com.maliksalimov.my_coffee_chat.chat;
 
 import com.maliksalimov.my_coffee_chat.database.DatabaseUtil;
-import lombok.Setter;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -24,8 +23,11 @@ public class CoffeeShop {
     private final int numberOfBaristas = 10;
     private boolean baristasStarted = false;
 
-    @Setter
     private Consumer<String> onResponse;
+
+    public void setOnResponse(Consumer<String> onResponse) {
+        this.onResponse = onResponse;
+    }
 
     public synchronized void startBaristas(){
         if (baristasStarted) return;
