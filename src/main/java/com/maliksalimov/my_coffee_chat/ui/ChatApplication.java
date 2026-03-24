@@ -5,11 +5,13 @@ import com.maliksalimov.my_coffee_chat.chat.CoffeeShop;
 import com.maliksalimov.my_coffee_chat.database.DatabaseUtil;
 import com.maliksalimov.my_coffee_chat.model.Message;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -35,29 +37,95 @@ public class ChatApplication extends Application{
         coffeeShop.startBaristas();
         chat = new Chat(coffeeShop);
 
+        // Chat area
         chatArea = new TextArea();
         chatArea.setEditable(false);
         chatArea.setPrefHeight(400);
+        chatArea.setStyle("""
+        -fx-control-inner-background: #1e1e2e;
+        -fx-text-fill: #cdd6f4;
+        -fx-font-family: 'Monospace';
+        -fx-font-size: 13px;
+        -fx-border-color: #45475a;
+        -fx-border-radius: 8px;
+        -fx-background-radius: 8px;
+    """);
 
+        // Message field
         messageField = new TextField();
         messageField.setPromptText("Write your message here...");
         messageField.setPrefWidth(300);
+        messageField.setStyle("""
+        -fx-background-color: #313244;
+        -fx-text-fill: #cdd6f4;
+        -fx-prompt-text-fill: #6c7086;
+        -fx-font-size: 13px;
+        -fx-border-color: #89b4fa;
+        -fx-border-radius: 6px;
+        -fx-background-radius: 6px;
+        -fx-padding: 8px;
+    """);
+        messageField.setOnKeyPressed(e -> {
+            if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                sendMessage();
+            }
+        });
 
-        Button sendButton = new Button("Send");
+        // Send button
+        Button sendButton = new Button("Send ➤");
+        sendButton.setStyle("""
+        -fx-background-color: #89b4fa;
+        -fx-text-fill: #1e1e2e;
+        -fx-font-weight: bold;
+        -fx-font-size: 13px;
+        -fx-border-radius: 6px;
+        -fx-background-radius: 6px;
+        -fx-padding: 8px 16px;
+        -fx-cursor: hand;
+    """);
         sendButton.setOnAction(e -> sendMessage());
 
-        Button uploadButton = new Button("Upload Image");
+        // Upload button
+        Button uploadButton = new Button("📎 Upload Image");
+        uploadButton.setStyle("""
+        -fx-background-color: #313244;
+        -fx-text-fill: #cdd6f4;
+        -fx-font-size: 13px;
+        -fx-border-color: #6c7086;
+        -fx-border-radius: 6px;
+        -fx-background-radius: 6px;
+        -fx-padding: 8px 16px;
+        -fx-cursor: hand;
+    """);
         uploadButton.setOnAction(e -> uploadImage(stage));
 
+        // Image list
         imageList = new ListView<>(uploadedImages);
         imageList.setPrefHeight(150);
+        imageList.setStyle("""
+        -fx-background-color: #1e1e2e;
+        -fx-border-color: #45475a;
+        -fx-border-radius: 8px;
+        -fx-background-radius: 8px;
+    """);
 
+        // Callback
+        coffeeShop.setOnResponse(response ->
+                javafx.application.Platform.runLater(() ->
+                        chatArea.appendText("Barista: " + response + "\n")
+                )
+        );
+
+        // Layout
         HBox inputBox = new HBox(10, messageField, sendButton);
-        VBox root = new VBox(10, chatArea, inputBox, uploadButton, imageList);
-        root.setPadding(new Insets(10));
+        inputBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
-        Scene scene = new Scene(root, 500, 650);
-        stage.setTitle("Coffee Chat");
+        VBox root = new VBox(12, chatArea, inputBox, uploadButton, imageList);
+        root.setPadding(new Insets(16));
+        root.setStyle("-fx-background-color: #181825;");
+
+        Scene scene = new Scene(root, 520, 680);
+        stage.setTitle("☕ Coffee Chat");
         stage.setScene(scene);
         stage.show();
 

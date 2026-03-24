@@ -1,15 +1,20 @@
 package com.maliksalimov.my_coffee_chat.chat;
 
 import com.maliksalimov.my_coffee_chat.database.DatabaseUtil;
+import lombok.Setter;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.function.Consumer;
 
 public class CoffeeShop {
 
     private final BlockingQueue<String> orderQueue = new LinkedBlockingQueue<>();
 
     private final int numberOfBaristas = 10;
+
+    @Setter
+    private Consumer<String> onResponse;
 
     public void startBaristas(){
         for (int i = 0;i < numberOfBaristas;i ++) {
@@ -36,11 +41,14 @@ public class CoffeeShop {
                 System.out.println(Thread.currentThread().getName() + "Processing order: " + message);
 
                 if(message.toLowerCase().contains("order")){
-                    String response = "Your order has been placed" + message;
+                    String response = "Your order has been placed: " + message;
                     DatabaseUtil.saveMessage("Barista", response);
+                    if (onResponse != null) {
+                        onResponse.accept(response);
+                    }
                     System.out.println(Thread.currentThread().getName() + "Sending response: " + response);
                 } else{
-                    String response = "I don't understand your order" + message;
+                    String response = "I don't understand your order: " + message;
                     DatabaseUtil.saveMessage("Barista", response);
                     System.out.println(Thread.currentThread().getName() + "Sending response: " + response);
                 }
@@ -48,6 +56,7 @@ public class CoffeeShop {
                 Thread.currentThread().interrupt();
                 break;
             }
+
         }
     }
 }
