@@ -10,6 +10,9 @@ public class Chat {
     }
 
     public void sendMessage(String sender, String message){
+        if (message == null || message.trim().isEmpty()) {
+            return;
+        }
         DatabaseUtil.saveMessage(sender, message);
         coffeeShop.receiveMessage(message);
     }

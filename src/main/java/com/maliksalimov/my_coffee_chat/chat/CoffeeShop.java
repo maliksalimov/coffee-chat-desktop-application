@@ -8,15 +8,27 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
 
 public class CoffeeShop {
+    private static CoffeeShop instance;
+
+    private CoffeeShop() {}
+
+    public static synchronized CoffeeShop getInstance() {
+        if (instance == null) {
+            instance = new CoffeeShop();
+        }
+        return instance;
+    }
 
     private final BlockingQueue<String> orderQueue = new LinkedBlockingQueue<>();
 
     private final int numberOfBaristas = 10;
+    private boolean baristasStarted = false;
 
     @Setter
     private Consumer<String> onResponse;
 
-    public void startBaristas(){
+    public synchronized void startBaristas(){
+        if (baristasStarted) return;
         for (int i = 0;i < numberOfBaristas;i ++) {
             int barisataId = i + 1;
             Thread barista = new Thread(this::processOrders);
@@ -24,6 +36,7 @@ public class CoffeeShop {
             barista.setDaemon(true);
             barista.start();
         }
+        baristasStarted = true;
     }
 
     public void receiveMessage(String message){
@@ -38,20 +51,20 @@ public class CoffeeShop {
         while(true){
             try{
                 String message = orderQueue.take();
-                System.out.println(Thread.currentThread().getName() + "Processing order: " + message);
+                System.out.println(Thread.currentThread().getName() + " Processing order: " + message);
 
+                String response;
                 if(message.toLowerCase().contains("order")){
-                    String response = "Your order has been placed: " + message;
-                    DatabaseUtil.saveMessage("Barista", response);
-                    if (onResponse != null) {
-                        onResponse.accept(response);
-                    }
-                    System.out.println(Thread.currentThread().getName() + "Sending response: " + response);
+                    response = "Your order has been placed: " + message;
                 } else{
-                    String response = "I don't understand your order: " + message;
-                    DatabaseUtil.saveMessage("Barista", response);
-                    System.out.println(Thread.currentThread().getName() + "Sending response: " + response);
+                    response = "I don't understand your order: " + message;
                 }
+                DatabaseUtil.saveMessage("Barista", response);
+                Consumer<String> callback = onResponse;
+                if (callback != null) {
+                    callback.accept(response);
+                }
+                System.out.println(Thread.currentThread().getName() + " Sending response: " + response);
             } catch (InterruptedException e){
                 Thread.currentThread().interrupt();
                 break;

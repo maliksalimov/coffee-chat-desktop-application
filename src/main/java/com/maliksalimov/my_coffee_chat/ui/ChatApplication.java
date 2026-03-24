@@ -33,7 +33,7 @@ public class ChatApplication extends Application{
 
     @Override
     public void start(Stage stage) throws Exception {
-        CoffeeShop coffeeShop = new CoffeeShop();
+        CoffeeShop coffeeShop = CoffeeShop.getInstance();
         coffeeShop.startBaristas();
         chat = new Chat(coffeeShop);
 
