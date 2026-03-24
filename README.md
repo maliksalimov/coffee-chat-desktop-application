@@ -1,111 +1,233 @@
-# Welcome to My Coffee Chat
-***
+# My Coffee Chat
 
-## Task
-The challenge was to extend an existing multithreaded coffee shop application with two major features:
+A multithreaded Java desktop application simulating a real-time coffee shop chat system between customers and baristas. Built with JavaFX for the GUI, Spring Boot for application bootstrapping, and SQLite for persistent message storage.
 
-1. **Chat Functionality (Part 01):** Customers needed a way to interact with baristas in real time — sending messages, placing orders, and having the entire conversation history persisted to a database using JDBC.
+---
 
-2. **Desktop Interface (Part 02):** The application needed a user-friendly desktop GUI built with JavaFX, allowing users to view chat history, send messages, upload images, and see barista responses — all in one window.
+## Table of Contents
 
-The core challenges included managing concurrent barista threads safely, integrating SQLite via JDBC without an ORM, and connecting a JavaFX UI to a multithreaded backend using callbacks.
+- [Overview](#overview)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+- [Database Schema](#database-schema)
+- [Design Decisions](#design-decisions)
 
-## Description
-The solution is built in Java 21 using Gradle, JavaFX, and SQLite (via JDBC).
+---
 
-**Architecture overview:**
+## Overview
+
+My Coffee Chat demonstrates concurrent programming patterns in a real-world context. Customers send messages and place orders through a JavaFX GUI; a pool of 10 barista threads processes incoming messages concurrently via a `LinkedBlockingQueue`, persists all conversations to a local SQLite database, and pushes responses back to the UI via a thread-safe callback mechanism.
+
+---
+
+## Features
+
+- **Real-time multithreaded messaging** — 10 barista threads process orders concurrently using a producer-consumer pattern
+- **Order detection** — keyword-based routing distinguishes order requests from general messages
+- **Persistent chat history** — all messages stored in SQLite and reloaded on startup
+- **Image uploads** — customers can attach images (JPG/PNG); previewed in a 200x200 gallery
+- **Modern dark UI** — Catppuccin-inspired theme built with JavaFX CSS
+- **Enter-to-send** — keyboard shortcut support in the message input field
+
+---
+
+## Architecture
+
 ```
-MyCoffeeChatApplication   → Entry point: initializes DB, starts baristas, launches UI
-├── DatabaseUtil           → JDBC utility: handles all DB connections, INSERT, SELECT
-├── Message                → Model class: represents a single chat message
-├── CoffeeShop             → Manages barista threads (BlockingQueue + Consumer callback)
-├── Chat                   → Sends messages from the customer side
-└── ChatApplication        → JavaFX UI: TextArea, TextField, Button, ListView
+Customer Input (JavaFX UI)
+        │
+        ▼
+  Chat.sendMessage()
+        │
+        ├──► DatabaseUtil.saveMessage()  →  SQLite (messages table)
+        │
+        └──► CoffeeShop.receiveMessage()  →  LinkedBlockingQueue
+                                                    │
+                                    ┌───────────────┴───────────────┐
+                               Barista 1 ... Barista 10  (daemon threads)
+                                    │
+                           processOrders() loop
+                                    │
+                          contains "order"?
+                           ├─ YES → "Your order has been placed: ..."
+                           └─ NO  → "I don't understand your order: ..."
+                                    │
+                           DatabaseUtil.saveMessage()
+                                    │
+                           onResponse callback
+                                    │
+                           Platform.runLater()  →  UI Update
 ```
 
-**How the chat flow works:**
+### Key Components
+
+| Component | Responsibility |
+|---|---|
+| `MyCoffeeChatApplication` | Entry point — initializes DB, starts barista threads, launches JavaFX |
+| `CoffeeShop` | Manages thread pool and message queue; dispatches to barista workers |
+| `Chat` | Customer-facing controller; saves message and forwards to queue |
+| `DatabaseUtil` | JDBC utility for all SQLite operations (init, save, fetch) |
+| `ChatApplication` | JavaFX stage/scene — renders chat, handles input, manages image gallery |
+| `Message` | Data model — `id`, `sender`, `text`, `timestamp` |
+
+---
+
+## Tech Stack
+
+| Technology | Version | Purpose |
+|---|---|---|
+| Java | 21 | Core language |
+| Spring Boot | 3.2.3 | Application framework and DI bootstrapping |
+| JavaFX | 21 | Desktop GUI (controls, layouts, CSS styling) |
+| SQLite (JDBC) | 3.45.1.0 | Embedded local database — zero configuration |
+| Lombok | Latest | Boilerplate reduction (getters, constructors) |
+| Gradle | 8+ | Build tool and dependency management |
+| JUnit 5 | via Spring Boot Starter | Unit testing |
+
+---
+
+## Project Structure
+
 ```
-Customer types message → Chat.sendMessage()
-                              ↓
-                    DatabaseUtil.saveMessage()    ← saved to SQLite
-                              ↓
-                    CoffeeShop.receiveMessage()   ← added to BlockingQueue
-                              ↓
-                    Barista Thread (processOrders()) ← picks up from queue
-                              ↓
-                    onResponse callback → Platform.runLater() → chatArea.appendText()
+my_coffee_chat/
+├── build.gradle
+├── settings.gradle
+├── README.md
+├── my_coffee.db                               # SQLite DB (auto-created at runtime)
+│
+└── src/
+    ├── main/
+    │   ├── java/com/maliksalimov/my_coffee_chat/
+    │   │   ├── MyCoffeeChatApplication.java   # Entry point
+    │   │   ├── model/
+    │   │   │   └── Message.java               # Message data model
+    │   │   ├── database/
+    │   │   │   └── DatabaseUtil.java          # JDBC operations
+    │   │   ├── chat/
+    │   │   │   ├── Chat.java                  # Customer message controller
+    │   │   │   └── CoffeeShop.java            # Barista thread manager
+    │   │   └── ui/
+    │   │       └── ChatApplication.java       # JavaFX GUI
+    │   └── resources/
+    │       └── application.properties
+    └── test/
+        └── java/com/maliksalimov/my_coffee_chat/
+            └── MyCoffeeChatApplicationTests.java
 ```
 
-**Key design decisions:**
-- `LinkedBlockingQueue` is used for a thread-safe message passing between the customer and barista threads
-- `Consumer<String> onResponse` callback decouples the backend thread from the JavaFX UI thread
-- `Platform.runLater()` ensures UI updates happen on the JavaFX Application Thread
-- SQLite was chosen for zero-configuration local persistence (no server required)
-- `try-with-resources` is used throughout JDBC code to prevent connection leaks
+---
 
-## Installation
+## Getting Started
 
-**Prerequisites:**
-- Java 21 (Amazon Corretto or any JDK 21+)
-- Gradle 8+
-- IntelliJ IDEA (recommended) or any Java IDE
+### Prerequisites
 
-**Clone the repository:**
+- **Java 21** (Amazon Corretto or any JDK 21+)
+- **Gradle 8+** (or use the included Gradle wrapper)
+
+### Clone
+
 ```bash
-git clone https://github.com/maliksalimov/my_coffee_chat.git
+git clone https://git.us.qwasar.io/my_coffee_chat_208627_slgeta/my_coffee_chat.git
 cd my_coffee_chat
 ```
 
-**Install dependencies:**
+### Build
+
 ```bash
 ./gradlew build
 ```
 
-This will automatically download all dependencies defined in `build.gradle`:
+Gradle will automatically download all declared dependencies:
+
 - `org.springframework.boot:spring-boot-starter`
 - `org.xerial:sqlite-jdbc:3.45.1.0`
 - `org.openjfx:javafx-controls:21`
 - `org.openjfx:javafx-fxml:21`
 - `org.projectlombok:lombok`
 
-> **Note:** No database setup is required. SQLite will automatically create a `my_coffee.db` file in the project root on first run.
+> No database setup required. `my_coffee.db` is created automatically on first launch.
 
-## Usage
+### Run
 
-**Run the application:**
 ```bash
 ./gradlew run
 ```
 
-Or run directly from IntelliJ IDEA by executing `MyCoffeeChatApplication.java`.
+Or open the project in IntelliJ IDEA and run `MyCoffeeChatApplication.java` directly.
 
-**Using the chat:**
+---
+
+## Usage
+
+### Sending a Message
+
+Type any message in the input field and press **Enter** or click **Send**.
+
 ```
-# Send a regular message
-> Hello, what do you have today?
-Barista: I don't understand your order: Hello, what do you have today?
-
-# Place an order (use the word "order")
-> order cappuccino
-Barista: Your order has been placed: order cappuccino
-
-# Upload an image
-Click "📎 Upload Image" → select a .jpg / .png / .jpeg file
-The image will appear in the gallery below and be saved to the database.
+You:     Hello! What do you have today?
+Barista: I don't understand your order: Hello! What do you have today?
 ```
 
-**Order detection:**
-Any message containing the word `order` (case-insensitive) is treated as an order. For example:
-- `order latte` ✅
-- `I want to order an espresso` ✅
-- `What is on the menu?` → barista responds with a default message
+### Placing an Order
 
-**Chat history:**
-All messages (both customer and barista) are saved to `my_coffee.db` and automatically loaded on startup.
+Include the word **"order"** (case-insensitive) anywhere in your message.
 
-### The Core Team
+```
+You:     I'd like to order a cappuccino
+Barista: Your order has been placed: I'd like to order a cappuccino
+```
+
+Examples of valid order triggers:
+- `order latte`
+- `I want to order an espresso`
+- `Can I order two flat whites?`
+
+### Uploading an Image
+
+Click **Upload Image**, select a JPG or PNG file, and it appears as a 200x200 thumbnail in the image gallery. The filename is also persisted to the database.
+
+### Chat History
+
+All messages are saved to `my_coffee.db` and automatically reloaded into the UI on every startup.
+
+---
+
+## Database Schema
+
+```sql
+CREATE TABLE IF NOT EXISTS messages (
+    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    sender    TEXT    NOT NULL,
+    text      TEXT    NOT NULL,
+    timestamp TEXT    DEFAULT (datetime('now'))
+);
+```
+
+Both customer and barista messages are written to this table. On startup, all rows are fetched ordered by `id` to reconstruct the conversation history.
+
+---
+
+## Design Decisions
+
+| Decision | Rationale |
+|---|---|
+| `LinkedBlockingQueue` | Thread-safe producer-consumer without explicit locks or synchronization |
+| `Consumer<String>` callback | Decouples barista threads from JavaFX layer — backend has no UI dependency |
+| `Platform.runLater()` | Guarantees all UI mutations occur on the JavaFX Application Thread |
+| 10 daemon threads | Parallel throughput; daemon flag ensures clean JVM shutdown without manual interruption |
+| SQLite + JDBC | Zero-configuration embedded persistence — no external server required |
+| `try-with-resources` | Guarantees JDBC connection and statement cleanup, preventing resource leaks |
+| Keyword-based order detection | Lightweight routing without an NLP or external dependency |
+
+---
+
+## Author
 
 **Malik Salimov** — Java Developer
 
 <span><i>Made at <a href='https://qwasar.io'>Qwasar SV -- Software Engineering School</a></i></span>
-<span><img alt='Qwasar SV -- Software Engineering School\'s Logo' src='https://storage.googleapis.com/qwasar-public/qwasar-logo_50x50.png' width='20px' /></span>
+<span><img alt='Qwasar SV -- Software Engineering School Logo' src='https://storage.googleapis.com/qwasar-public/qwasar-logo_50x50.png' width='20px' /></span>
