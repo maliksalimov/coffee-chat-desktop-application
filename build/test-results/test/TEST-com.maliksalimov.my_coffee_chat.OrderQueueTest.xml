@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.maliksalimov.my_coffee_chat.OrderQueueTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-03-25T10:36:21.685Z" hostname="Maliks-MacBook-Air.local" time="0.019">
+  <properties/>
+  <testcase name="processed_message_should_be_saved_to_database()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.004"/>
+  <testcase name="message_should_be_processed_case_insensitively_by_barista()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.003"/>
+  <testcase name="message_should_be_received_by_barista()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.003"/>
+  <testcase name="start_baristas_should_be_idempotent()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.001"/>
+  <testcase name="message_should_be_ignored_by_barista()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.002"/>
+  <testcase name="null_message_should_throw_exception()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.002"/>
+  <testcase name="message_should_be_processed_by_barista()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.002"/>
+  <system-out><![CDATA[Barista 5 Processing order: order mocha
+Barista 5 Sending response: Your order has been placed: order mocha
+Barista 6 Processing order: Please ORDER cappuccino
+Barista 6 Sending response: Your order has been placed: Please ORDER cappuccino
+Barista 7 Processing order: order latte
+Barista 7 Sending response: Your order has been placed: order latte
+Barista 8 Processing order: I want to drink coffee
+Barista 8 Sending response: I don't understand your order: I want to drink coffee
+Barista 9 Processing order: I want to order espresso
+Barista 9 Sending response: Your order has been placed: I want to order espresso
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

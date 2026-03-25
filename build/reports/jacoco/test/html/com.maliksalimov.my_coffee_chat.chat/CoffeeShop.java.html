@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CoffeeShop.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">my_coffee_chat</a> &gt; <a href="index.source.html" class="el_package">com.maliksalimov.my_coffee_chat.chat</a> &gt; <span class="el_source">CoffeeShop.java</span></div><h1>CoffeeShop.java</h1><pre class="source lang-java linenums">package com.maliksalimov.my_coffee_chat.chat;
+
+import com.maliksalimov.my_coffee_chat.database.DatabaseUtil;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.function.Consumer;
+
+public class CoffeeShop {
+    private static CoffeeShop instance;
+
+<span class="fc" id="L12">    private CoffeeShop() {}</span>
+
+    public static synchronized CoffeeShop getInstance() {
+<span class="fc bfc" id="L15" title="All 2 branches covered.">        if (instance == null) {</span>
+<span class="fc" id="L16">            instance = new CoffeeShop();</span>
+        }
+<span class="fc" id="L18">        return instance;</span>
+    }
+
+<span class="fc" id="L21">    private final BlockingQueue&lt;String&gt; orderQueue = new LinkedBlockingQueue&lt;&gt;();</span>
+
+<span class="fc" id="L23">    private final int numberOfBaristas = 10;</span>
+<span class="fc" id="L24">    private boolean baristasStarted = false;</span>
+
+    private Consumer&lt;String&gt; onResponse;
+
+    public void setOnResponse(Consumer&lt;String&gt; onResponse) {
+<span class="fc" id="L29">        this.onResponse = onResponse;</span>
+<span class="fc" id="L30">    }</span>
+
+    public synchronized void startBaristas(){
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if (baristasStarted) return;</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        for (int i = 0;i &lt; numberOfBaristas;i ++) {</span>
+<span class="fc" id="L35">            int barisataId = i + 1;</span>
+<span class="fc" id="L36">            Thread barista = new Thread(this::processOrders);</span>
+<span class="fc" id="L37">            barista.setName(&quot;Barista &quot; + barisataId);</span>
+<span class="fc" id="L38">            barista.setDaemon(true);</span>
+<span class="fc" id="L39">            barista.start();</span>
+        }
+<span class="fc" id="L41">        baristasStarted = true;</span>
+<span class="fc" id="L42">    }</span>
+
+    public void receiveMessage(String message){
+        try{
+<span class="fc" id="L46">            orderQueue.put(message);</span>
+<span class="nc" id="L47">        } catch (InterruptedException e){</span>
+<span class="nc" id="L48">            Thread.currentThread().interrupt();</span>
+<span class="fc" id="L49">        }</span>
+<span class="fc" id="L50">    }</span>
+
+    public void processOrders(){
+        while(true){
+            try{
+<span class="fc" id="L55">                String message = orderQueue.take();</span>
+<span class="fc" id="L56">                System.out.println(Thread.currentThread().getName() + &quot; Processing order: &quot; + message);</span>
+
+                String response;
+<span class="fc bfc" id="L59" title="All 2 branches covered.">                if(message.toLowerCase().contains(&quot;order&quot;)){</span>
+<span class="fc" id="L60">                    response = &quot;Your order has been placed: &quot; + message;</span>
+                } else{
+<span class="fc" id="L62">                    response = &quot;I don't understand your order: &quot; + message;</span>
+                }
+<span class="fc" id="L64">                DatabaseUtil.saveMessage(&quot;Barista&quot;, response);</span>
+<span class="fc" id="L65">                Consumer&lt;String&gt; callback = onResponse;</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">                if (callback != null) {</span>
+<span class="fc" id="L67">                    callback.accept(response);</span>
+                }
+<span class="fc" id="L69">                System.out.println(Thread.currentThread().getName() + &quot; Sending response: &quot; + response);</span>
+<span class="nc" id="L70">            } catch (InterruptedException e){</span>
+<span class="nc" id="L71">                Thread.currentThread().interrupt();</span>
+<span class="nc" id="L72">                break;</span>
+<span class="fc" id="L73">            }</span>
+
+        }
+<span class="nc" id="L76">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

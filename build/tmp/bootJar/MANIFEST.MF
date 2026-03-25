@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Main-Class: com.maliksalimov.my_coffee_chat.MyCoffeeChatApplication
+Start-Class: com.maliksalimov.my_coffee_chat.MyCoffeeChatApplication
+Spring-Boot-Version: 3.4.3
+Spring-Boot-Classes: BOOT-INF/classes/
+Spring-Boot-Lib: BOOT-INF/lib/
+Spring-Boot-Classpath-Index: BOOT-INF/classpath.idx
+Spring-Boot-Layers-Index: BOOT-INF/layers.idx
+Build-Jdk-Spec: 21
+Implementation-Title: my_coffee_chat
+Implementation-Version: 1.0-SNAPSHOT
+

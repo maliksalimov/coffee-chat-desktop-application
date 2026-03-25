@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.maliksalimov.my_coffee_chat.CoffeeShopTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-03-25T10:36:21.661Z" hostname="Maliks-MacBook-Air.local" time="0.008">
+  <properties/>
+  <testcase name="set_on_response_should_replace_previous_callback()" classname="com.maliksalimov.my_coffee_chat.CoffeeShopTest" time="0.004"/>
+  <testcase name="get_instance_should_return_singleton_instance()" classname="com.maliksalimov.my_coffee_chat.CoffeeShopTest" time="0.002"/>
+  <testcase name="start_baristas_should_be_safe_to_call_multiple_times()" classname="com.maliksalimov.my_coffee_chat.CoffeeShopTest" time="0.002"/>
+  <system-out><![CDATA[Barista 4 Processing order: order flat white
+Barista 4 Sending response: Your order has been placed: order flat white
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

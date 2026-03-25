@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-03-25T10:36:21.670Z" hostname="Maliks-MacBook-Air.local" time="0.013">
+  <properties/>
+  <testcase name="get_all_messages_should_return_empty_list_when_no_data()" classname="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" time="0.002"/>
+  <testcase name="get_all_messages_should_return_records_in_insert_order()" classname="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" time="0.004"/>
+  <testcase name="save_message_should_persist_message()" classname="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" time="0.003"/>
+  <testcase name="initialize_database_should_be_idempotent()" classname="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

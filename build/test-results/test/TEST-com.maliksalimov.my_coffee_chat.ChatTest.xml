@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.maliksalimov.my_coffee_chat.ChatTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-03-25T10:36:20.921Z" hostname="Maliks-MacBook-Air.local" time="0.738">
+  <properties/>
+  <testcase name="sending_blank_message_should_not_be_saved_to_database()" classname="com.maliksalimov.my_coffee_chat.ChatTest" time="0.694"/>
+  <testcase name="sending_null_message_should_not_be_saved_to_database()" classname="com.maliksalimov.my_coffee_chat.ChatTest" time="0.003"/>
+  <testcase name="sending_message_should_not_throw_exception()" classname="com.maliksalimov.my_coffee_chat.ChatTest" time="0.009"/>
+  <testcase name="sending_message_should_save_user_message()" classname="com.maliksalimov.my_coffee_chat.ChatTest" time="0.008"/>
+  <testcase name="sending_blank_message_should_not_throw_exception()" classname="com.maliksalimov.my_coffee_chat.ChatTest" time="0.004"/>
+  <testcase name="response_should_call_callback()" classname="com.maliksalimov.my_coffee_chat.ChatTest" time="0.006"/>
+  <system-out><![CDATA[Barista 1 Processing order: Hello
+Barista 2 Processing order: order americano
+Barista 1 Sending response: I don't understand your order: Hello
+Barista 2 Sending response: Your order has been placed: order americano
+Barista 3 Processing order: order coffee
+Barista 3 Sending response: Your order has been placed: order coffee
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
