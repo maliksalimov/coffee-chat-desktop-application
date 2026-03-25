@@ -231,6 +231,32 @@ Both customer and barista messages are written to this table. On startup, all ro
 ./gradlew jacocoTestReport
 ```
 
+### Build the JAR
+```bash
+./gradlew clean build
+```
+
+JAR file is generated at:
+```
+build/libs/coffee-shop-app-1.0-SNAPSHOT.jar
+```
+
+### Run the JAR
+
+Note: JavaFX applications require JavaFX modules on the module path.
+Run with IntelliJ IDEA or use:
+```bash
+./gradlew run
+```
+
+### Test Reports
+
+After build, reports are available at:
+- Test results: `build/reports/tests/test/index.html`
+- Coverage report: `build/reports/jacoco/test/html/index.html`
+
+
+
 HTML report path:
 
 ```text
