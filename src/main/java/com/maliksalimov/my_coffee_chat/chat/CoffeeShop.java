@@ -1,12 +1,15 @@
 package com.maliksalimov.my_coffee_chat.chat;
 
 import com.maliksalimov.my_coffee_chat.database.DatabaseUtil;
+import com.maliksalimov.my_coffee_chat.framework.BusinessObject;
+import com.maliksalimov.my_coffee_chat.framework.ChatHandler;
+import com.maliksalimov.my_coffee_chat.framework.OrderHandler;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
 
-public class CoffeeShop {
+public class CoffeeShop implements BusinessObject {
     private static CoffeeShop instance;
 
     private CoffeeShop() {}
@@ -73,5 +76,20 @@ public class CoffeeShop {
             }
 
         }
+    }
+
+    @OrderHandler
+    public void handleOrder(String orderDetails){
+        System.out.println("Order received: " + orderDetails);
+    }
+
+    @ChatHandler
+    public void handleChat(String message){
+        System.out.println("Chat message received: " + message);
+    }
+
+    @Override
+    public void processRequest(String request) {
+        System.out.println(request);
     }
 }
