@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InteractionHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">my_coffee_chat</a> &gt; <a href="index.source.html" class="el_package">com.maliksalimov.my_coffee_chat.framework</a> &gt; <span class="el_source">InteractionHandler.java</span></div><h1>InteractionHandler.java</h1><pre class="source lang-java linenums">package com.maliksalimov.my_coffee_chat.framework;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * Dispatches incoming requests to handler methods on a {@link BusinessObject}.
+ *
+ * &lt;p&gt;On first use, scans the target class for methods annotated with any
+ * annotation that carries {@link RequestMappingMeta}. The result is cached
+ * in {@code methodCache} so subsequent calls avoid repeated reflection scans.
+ *
+ * &lt;p&gt;Usage:
+ * &lt;pre&gt;
+ *   InteractionHandler handler = new InteractionHandler();
+ *   handler.handleInteraction(coffeeShop, &quot;order&quot;, &quot;1 Cappuccino&quot;);
+ * &lt;/pre&gt;
+ */
+<span class="nc" id="L23">public class InteractionHandler {</span>
+
+    /**
+     * Cache: maps each BusinessObject class to the list of handler methods
+     * found on it. Populated once per class on first call.
+     */
+<span class="nc" id="L29">    private final Map&lt;Class&lt;?&gt;, List&lt;Method&gt;&gt; methodCache = new ConcurrentHashMap&lt;&gt;();</span>
+
+    /**
+     * Finds and invokes the first handler method on {@code businessObject}
+     * whose annotation is meta-annotated with {@link RequestMappingMeta}.
+     *
+     * @param businessObject the target object to dispatch the request to
+     * @param requestType    a label describing the request (used in the
+     *                       &quot;no handler found&quot; message)
+     * @param request        the request payload passed to the handler method
+     */
+    public void handleInteraction(BusinessObject businessObject, String requestType, String request) {
+<span class="nc" id="L41">        List&lt;Method&gt; handlers = methodCache.computeIfAbsent(</span>
+<span class="nc" id="L42">                businessObject.getClass(), this::scanHandlerMethods);</span>
+
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        if (handlers.isEmpty()) {</span>
+<span class="nc" id="L45">            System.out.println(&quot;No handler found for request type: &quot; + requestType);</span>
+<span class="nc" id="L46">            return;</span>
+        }
+
+        try {
+<span class="nc" id="L50">            handlers.get(0).invoke(businessObject, request);</span>
+<span class="nc" id="L51">        } catch (Exception e) {</span>
+<span class="nc" id="L52">            e.printStackTrace();</span>
+<span class="nc" id="L53">        }</span>
+<span class="nc" id="L54">    }</span>
+
+    /**
+     * Scans all public methods of {@code clazz} and returns those whose
+     * annotations are themselves annotated with {@link RequestMappingMeta}.
+     * Called at most once per class thanks to {@code methodCache}.
+     *
+     * @param clazz the class to scan
+     * @return list of handler methods; never null, may be empty
+     */
+    private List&lt;Method&gt; scanHandlerMethods(Class&lt;?&gt; clazz) {
+<span class="nc" id="L65">        List&lt;Method&gt; handlers = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        for (Method method : clazz.getMethods()) {</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">            for (Annotation annotation : method.getAnnotations()) {</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">                if (annotation.annotationType().isAnnotationPresent(RequestMappingMeta.class)) {</span>
+<span class="nc" id="L69">                    handlers.add(method);</span>
+<span class="nc" id="L70">                    break;</span>
+                }
+            }
+        }
+<span class="nc" id="L74">        return handlers;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

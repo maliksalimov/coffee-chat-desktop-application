@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.3'
+    id 'org.springframework.boot' version '3.4.3'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'org.openjfx.javafxplugin' version '0.1.0'
     id 'jacoco'
@@ -44,4 +44,10 @@ jacocoTestReport {
         xml.required = true
         csv.required = false
     }
+}
+bootJar {
+    manifest {
+        attributes 'Main-Class': 'com.maliksalimov.my_coffee_chat.MyCoffeeChatApplication'
+    }
+    archiveFileName = 'coffee-shop-app-1.0-SNAPSHOT.jar'
 }

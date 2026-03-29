@@ -129,4 +129,20 @@ public class OrderQueueTest {
         assertTrue(success);
         assertTrue(answer[0].contains("I don't understand your order"));
     }
+
+    @Test
+    void multiple_concurrent_messages_should_all_be_processed() throws InterruptedException {
+        int messageCount = 10;
+        CountDownLatch latch = new CountDownLatch(messageCount);
+
+        coffeeShop.setOnResponse(response -> latch.countDown());
+
+        for (int i = 0; i < messageCount; i++) {
+            final int index = i;
+            new Thread(() -> coffeeShop.receiveMessage("order coffee " + index)).start();
+        }
+
+        boolean allProcessed = latch.await(10, TimeUnit.SECONDS);
+        assertTrue(allProcessed, "All " + messageCount + " messages should be processed");
+    }
 }

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.maliksalimov.my_coffee_chat.OrderQueueTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-03-29T20:21:02.581Z" hostname="Maliks-MacBook-Air.local" time="0.043">
+  <properties/>
+  <testcase name="processed_message_should_be_saved_to_database()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.015"/>
+  <testcase name="message_should_be_processed_case_insensitively_by_barista()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.003"/>
+  <testcase name="message_should_be_received_by_barista()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.003"/>
+  <testcase name="start_baristas_should_be_idempotent()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.001"/>
+  <testcase name="message_should_be_ignored_by_barista()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.002"/>
+  <testcase name="null_message_should_throw_exception()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.001"/>
+  <testcase name="message_should_be_processed_by_barista()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.002"/>
+  <testcase name="multiple_concurrent_messages_should_all_be_processed()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.013"/>
+  <system-out><![CDATA[Barista 6 Processing order: order mocha
+Barista 6 Sending response: Your order has been placed: order mocha
+Barista 7 Processing order: Please ORDER cappuccino
+Barista 7 Sending response: Your order has been placed: Please ORDER cappuccino
+Barista 8 Processing order: order latte
+Barista 8 Sending response: Your order has been placed: order latte
+Barista 9 Processing order: I want to drink coffee
+Barista 9 Sending response: I don't understand your order: I want to drink coffee
+Barista 10 Processing order: I want to order espresso
+Barista 10 Sending response: Your order has been placed: I want to order espresso
+Barista 3 Processing order: order coffee 0
+Barista 1 Processing order: order coffee 1
+Barista 2 Processing order: order coffee 2
+Barista 4 Processing order: order coffee 3
+Barista 5 Processing order: order coffee 4
+Barista 8 Processing order: order coffee 7
+Barista 6 Processing order: order coffee 5
+Barista 9 Processing order: order coffee 8
+Barista 7 Processing order: order coffee 6
+Barista 10 Processing order: order coffee 9
+Barista 1 Sending response: Your order has been placed: order coffee 1
+Barista 2 Sending response: Your order has been placed: order coffee 2
+Barista 10 Sending response: Your order has been placed: order coffee 9
+Barista 3 Sending response: Your order has been placed: order coffee 0
+Barista 9 Sending response: Your order has been placed: order coffee 8
+Barista 5 Sending response: Your order has been placed: order coffee 4
+Barista 8 Sending response: Your order has been placed: order coffee 7
+Barista 4 Sending response: Your order has been placed: order coffee 3
+Barista 6 Sending response: Your order has been placed: order coffee 5
+Barista 7 Sending response: Your order has been placed: order coffee 6
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
