@@ -66,4 +66,13 @@ public class CoffeeShopTest {
             coffeeShop.startBaristas();
         });
     }
+
+    @Test
+    void processing_message_with_null_callback_should_not_throw() throws InterruptedException {
+        coffeeShop.setOnResponse(null);
+
+        assertDoesNotThrow(() -> coffeeShop.receiveMessage("order latte"));
+
+        Thread.sleep(1000);
+    }
 }

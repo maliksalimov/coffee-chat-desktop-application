@@ -7,9 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DatabaseUtilTest {
 
@@ -55,5 +53,21 @@ public class DatabaseUtilTest {
     void get_all_messages_should_return_empty_list_when_no_data() {
         List<Message> messages = DatabaseUtil.getAllMessages();
         assertTrue(messages.isEmpty());
+    }
+
+    @Test
+    void saving_message_with_extremely_long_text_should_not_throw() {
+        String longText = "a".repeat(100_000);
+
+        assertDoesNotThrow(() -> DatabaseUtil.saveMessage("User", longText));
+    }
+
+    @Test
+    void getting_messages_should_return_empty_list_on_fresh_database() {
+        List<Message> messages = DatabaseUtil.getAllMessages();
+
+        assertNotNull(messages, "Result should never be null even if DB is empty");
+        assertTrue(messages instanceof java.util.ArrayList,
+                "Result should be a modifiable list");
     }
 }

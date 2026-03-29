@@ -1,6 +1,6 @@
 # My Coffee Chat
 
-A multithreaded Java desktop application simulating a real-time coffee shop chat system between customers and baristas. Built with JavaFX for the GUI, Spring Boot for application bootstrapping, and SQLite for persistent message storage.
+A multithreaded Java desktop application simulating a real-time coffee shop chat system between customers and baristas. Built with JavaFX for the GUI, Spring Boot for application bootstrapping, SQLite for persistent message storage, and a custom reflection-based framework for dynamic request handling.
 
 ---
 
@@ -9,12 +9,14 @@ A multithreaded Java desktop application simulating a real-time coffee shop chat
 - [Overview](#overview)
 - [Features](#features)
 - [Architecture](#architecture)
+- [Framework](#framework)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
 - [Usage](#usage)
 - [Database Schema](#database-schema)
 - [Testing](#testing)
+- [Packaging](#packaging)
 - [Design Decisions](#design-decisions)
 
 ---
@@ -22,6 +24,8 @@ A multithreaded Java desktop application simulating a real-time coffee shop chat
 ## Overview
 
 My Coffee Chat demonstrates concurrent programming patterns in a real-world context. Customers send messages and place orders through a JavaFX GUI; a pool of 10 barista threads processes incoming messages concurrently via a `LinkedBlockingQueue`, persists all conversations to a local SQLite database, and pushes responses back to the UI via a thread-safe callback mechanism.
+
+The application also includes a custom annotation-driven framework built on Java Reflection, allowing dynamic dispatching of client requests to handler methods without hardcoded routing logic.
 
 ---
 
@@ -33,11 +37,11 @@ My Coffee Chat demonstrates concurrent programming patterns in a real-world cont
 - **Image uploads** — customers can attach images (JPG/PNG); previewed in a 200x200 gallery
 - **Modern dark UI** — Catppuccin-inspired theme built with JavaFX CSS
 - **Enter-to-send** — keyboard shortcut support in the message input field
+- **Custom annotation framework** — reflection-based request dispatching using meta-annotations
 
 ---
 
 ## Architecture
-
 ```
 Customer Input (JavaFX UI)
         │
@@ -69,11 +73,49 @@ Customer Input (JavaFX UI)
 | Component | Responsibility |
 |---|---|
 | `MyCoffeeChatApplication` | Entry point — initializes DB, starts barista threads, launches JavaFX |
-| `CoffeeShop` | Manages thread pool and message queue; dispatches to barista workers |
-| `Chat` | Customer-facing controller; saves message and forwards to queue |
+| `CoffeeShop` | Singleton — manages thread pool and message queue; dispatches to barista workers |
+| `Chat` | Customer-facing controller; validates, saves, and forwards messages |
 | `DatabaseUtil` | JDBC utility for all SQLite operations (init, save, fetch) |
 | `ChatApplication` | JavaFX stage/scene — renders chat, handles input, manages image gallery |
 | `Message` | Data model — `id`, `sender`, `text`, `timestamp` |
+
+---
+
+## Framework
+
+The `framework` package implements a lightweight annotation-driven dispatch system using Java Reflection.
+
+### How it works
+
+1. Methods are annotated with `@OrderHandler` or `@ChatHandler`
+2. Both annotations are themselves annotated with `@RequestMappingMeta`
+3. `InteractionHandler` scans all methods of a `BusinessObject` at runtime
+4. Any method whose annotation is marked with `@RequestMappingMeta` is invoked automatically
+
+No `if-else` chains. Adding a new request type requires only a new annotation and a new method.
+
+### Framework Components
+
+| Class | Responsibility |
+|---|---|
+| `BusinessObject` | Interface that all business classes implement |
+| `RequestMappingMeta` | Meta-annotation marking annotations as request handlers |
+| `OrderHandler` | Annotation for order-handling methods |
+| `ChatHandler` | Annotation for chat-handling methods |
+| `InteractionHandler` | Scans methods via reflection and dispatches requests |
+| `ReflectionUtil` | Utility for direct method invocation by name |
+| `CoffeeShopDemo` | Demo implementation of `BusinessObject` |
+| `BusinessTestClient` | Test client demonstrating the framework |
+
+### Example
+```java
+CoffeeShop coffeeShop = CoffeeShop.getInstance();
+InteractionHandler handler = new InteractionHandler();
+
+handler.handleInteraction(coffeeShop, "order", "1 Cappuccino");
+handler.handleInteraction(coffeeShop, "chat", "Hello, barista!");
+handler.handleInteraction(coffeeShop, "feedback", "Great service!");
+```
 
 ---
 
@@ -82,17 +124,16 @@ Customer Input (JavaFX UI)
 | Technology | Version | Purpose |
 |---|---|---|
 | Java | 21 | Core language |
-| Spring Boot | 3.2.3 | Application framework and DI bootstrapping |
+| Spring Boot | 3.4.3 | Application framework and DI bootstrapping |
 | JavaFX | 21 | Desktop GUI (controls, layouts, CSS styling) |
 | SQLite (JDBC) | 3.45.1.0 | Embedded local database — zero configuration |
-| Gradle | 8+ | Build tool and dependency management |
+| Gradle | 9.4 | Build tool and dependency management |
 | JUnit 5 | 5.10.2 | Unit testing |
 | JaCoCo | bundled Gradle plugin | Test coverage reporting |
 
 ---
 
 ## Project Structure
-
 ```
 my_coffee_chat/
 ├── build.gradle
@@ -103,16 +144,25 @@ my_coffee_chat/
 └── src/
     ├── main/
     │   ├── java/com/maliksalimov/my_coffee_chat/
-    │   │   ├── MyCoffeeChatApplication.java   # Entry point
+    │   │   ├── MyCoffeeChatApplication.java
     │   │   ├── model/
-    │   │   │   └── Message.java               # Message data model
+    │   │   │   └── Message.java
     │   │   ├── database/
-    │   │   │   └── DatabaseUtil.java          # JDBC operations
+    │   │   │   └── DatabaseUtil.java
     │   │   ├── chat/
-    │   │   │   ├── Chat.java                  # Customer message controller
-    │   │   │   └── CoffeeShop.java            # Barista thread manager
+    │   │   │   ├── Chat.java
+    │   │   │   └── CoffeeShop.java
+    │   │   ├── framework/
+    │   │   │   ├── BusinessObject.java
+    │   │   │   ├── RequestMappingMeta.java
+    │   │   │   ├── OrderHandler.java
+    │   │   │   ├── ChatHandler.java
+    │   │   │   ├── InteractionHandler.java
+    │   │   │   ├── ReflectionUtil.java
+    │   │   │   ├── CoffeeShopDemo.java
+    │   │   │   └── BusinessTestClient.java
     │   │   └── ui/
-    │   │       └── ChatApplication.java       # JavaFX GUI
+    │   │       └── ChatApplication.java
     │   └── resources/
     │       └── application.properties
     └── test/
@@ -135,35 +185,20 @@ my_coffee_chat/
 - **Gradle 8+** (or use the included Gradle wrapper)
 
 ### Clone
-
 ```bash
 git clone https://git.us.qwasar.io/my_coffee_chat_208627_slgeta/my_coffee_chat.git
 cd my_coffee_chat
 ```
 
 ### Build
-
 ```bash
 ./gradlew build
 ```
 
-Gradle will automatically download all declared dependencies:
-
-- `org.springframework.boot:spring-boot-starter`
-- `org.xerial:sqlite-jdbc:3.45.1.0`
-- `org.openjfx:javafx-controls:21`
-- `org.openjfx:javafx-fxml:21`
-- `org.junit.jupiter:junit-jupiter:5.10.2`
-
-> No database setup required. `my_coffee.db` is created automatically on first launch.
-
 ### Run
-
 ```bash
 ./gradlew run
 ```
-
-Or open the project in IntelliJ IDEA and run `MyCoffeeChatApplication.java` directly.
 
 ---
 
@@ -172,7 +207,6 @@ Or open the project in IntelliJ IDEA and run `MyCoffeeChatApplication.java` dire
 ### Sending a Message
 
 Type any message in the input field and press **Enter** or click **Send**.
-
 ```
 You:     Hello! What do you have today?
 Barista: I don't understand your order: Hello! What do you have today?
@@ -180,30 +214,19 @@ Barista: I don't understand your order: Hello! What do you have today?
 
 ### Placing an Order
 
-Include the word **"order"** (case-insensitive) anywhere in your message.
-
+Include the word **"order"** anywhere in your message.
 ```
 You:     I'd like to order a cappuccino
 Barista: Your order has been placed: I'd like to order a cappuccino
 ```
 
-Examples of valid order triggers:
-- `order latte`
-- `I want to order an espresso`
-- `Can I order two flat whites?`
-
 ### Uploading an Image
 
-Click **Upload Image**, select a JPG or PNG file, and it appears as a 200x200 thumbnail in the image gallery. The filename is also persisted to the database.
-
-### Chat History
-
-All messages are saved to `my_coffee.db` and automatically reloaded into the UI on every startup.
+Click **Upload Image**, select a JPG or PNG file. The image appears as a thumbnail and the filename is saved to the database.
 
 ---
 
 ## Database Schema
-
 ```sql
 CREATE TABLE IF NOT EXISTS messages (
     id        INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -213,83 +236,49 @@ CREATE TABLE IF NOT EXISTS messages (
 );
 ```
 
-Both customer and barista messages are written to this table. On startup, all rows are fetched ordered by `id` to reconstruct the conversation history.
-
 ---
 
 ## Testing
 
-### Run Unit Tests
-
+### Run Tests
 ```bash
 ./gradlew test
 ```
 
 ### Generate Coverage Report
-
 ```bash
 ./gradlew jacocoTestReport
 ```
+
+Reports are available at:
+
+- Test results: `build/reports/tests/test/index.html`
+- Coverage report: `build/reports/jacoco/test/html/index.html`
+
+### Test Classes
+
+| Class | What it tests |
+|---|---|
+| `OrderQueueTest` | Message queue processing, order detection, case sensitivity |
+| `ChatTest` | Message validation, database persistence, callback invocation |
+| `DatabaseUtilTest` | CRUD operations, insert order, empty state |
+| `CoffeeShopTest` | Singleton lifecycle, callback replacement, thread safety |
+
+---
+
+## Packaging
 
 ### Build the JAR
 ```bash
 ./gradlew clean build
 ```
 
-JAR file is generated at:
+JAR is generated at:
 ```
 build/libs/coffee-shop-app-1.0-SNAPSHOT.jar
 ```
 
-### Run the JAR
-
-Note: JavaFX applications require JavaFX modules on the module path.
-Run with IntelliJ IDEA or use:
-```bash
-./gradlew run
-```
-
-### Test Reports
-
-After build, reports are available at:
-- Test results: `build/reports/tests/test/index.html`
-- Coverage report: `build/reports/jacoco/test/html/index.html`
-
-
-
-HTML report path:
-
-```text
-build/reports/jacoco/test/html/index.html
-```
-
-### Coverage in IntelliJ IDEA
-
-1. Open **Run** → **Edit Configurations**.
-2. Select a JUnit/Gradle test configuration.
-3. Run with **Run with Coverage**.
-4. Open **Coverage** tool window to inspect class and line coverage.
-
-### Coverage in Eclipse
-
-1. Install **EclEmma** from Eclipse Marketplace.
-2. Right-click project or test class.
-3. Choose **Coverage As** → **JUnit Test**.
-4. Review coverage highlighting in editors and the Coverage view.
-
-### Coverage in VS Code
-
-1. Install **Extension Pack for Java** and **Coverage Gutters**.
-2. Run `./gradlew test jacocoTestReport`.
-3. Open `build/reports/jacoco/test/html/index.html` for full report details.
-4. Use Coverage Gutters to visualize line-level coverage from generated reports.
-
-### Testing Best Practices Used in This Project
-
-- Isolation via `@BeforeEach` and `@AfterEach`.
-- Separate test classes by component (`Chat`, `OrderQueue`, `DatabaseUtil`, `CoffeeShop`).
-- Descriptive test method naming for readability.
-- Stable assertions for behavior, persistence, and singleton lifecycle checks.
+> JavaFX applications require the JavaFX runtime on the module path. Use `./gradlew run` to launch the application directly.
 
 ---
 
@@ -297,13 +286,14 @@ build/reports/jacoco/test/html/index.html
 
 | Decision | Rationale |
 |---|---|
-| `LinkedBlockingQueue` | Thread-safe producer-consumer without explicit locks or synchronization |
-| `Consumer<String>` callback | Decouples barista threads from JavaFX layer — backend has no UI dependency |
-| `Platform.runLater()` | Guarantees all UI mutations occur on the JavaFX Application Thread |
-| 10 daemon threads | Parallel throughput; daemon flag ensures clean JVM shutdown without manual interruption |
-| SQLite + JDBC | Zero-configuration embedded persistence — no external server required |
-| `try-with-resources` | Guarantees JDBC connection and statement cleanup, preventing resource leaks |
-| Keyword-based order detection | Lightweight routing without an NLP or external dependency |
+| `LinkedBlockingQueue` | Thread-safe producer-consumer without explicit locks |
+| `Consumer<String>` callback | Decouples barista threads from JavaFX layer |
+| `Platform.runLater()` | Guarantees UI mutations on the JavaFX Application Thread |
+| 10 daemon threads | Parallel throughput; daemon flag ensures clean JVM shutdown |
+| SQLite + JDBC | Zero-configuration embedded persistence |
+| `try-with-resources` | Guarantees JDBC connection cleanup |
+| Reflection-based dispatch | Eliminates hardcoded routing; new handlers require only a new annotation |
+| Singleton `CoffeeShop` | Single thread pool shared across the application lifecycle |
 
 ---
 

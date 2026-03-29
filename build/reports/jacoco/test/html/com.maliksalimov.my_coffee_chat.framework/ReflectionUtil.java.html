@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReflectionUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">my_coffee_chat</a> &gt; <a href="index.source.html" class="el_package">com.maliksalimov.my_coffee_chat.framework</a> &gt; <span class="el_source">ReflectionUtil.java</span></div><h1>ReflectionUtil.java</h1><pre class="source lang-java linenums">package com.maliksalimov.my_coffee_chat.framework;
+
+import java.lang.reflect.Method;
+
+/**
+ * Utility class for direct method invocation via Java Reflection.
+ *
+ * &lt;p&gt;Provides a simplified API for invoking a single-{@code String}-parameter
+ * method by name, without the caller needing to handle reflection boilerplate.
+ */
+<span class="nc" id="L11">public class ReflectionUtil {</span>
+
+    /**
+     * Invokes the named method on {@code obj}, passing {@code parameter} as
+     * the sole argument.
+     *
+     * &lt;p&gt;The method must be public and accept exactly one {@code String}
+     * parameter. If no such method exists, a message is printed to stdout
+     * and the call returns silently.
+     *
+     * @param obj        the object on which to invoke the method
+     * @param methodName the exact name of the method to invoke
+     * @param parameter  the {@code String} argument to pass to the method
+     */
+    public static void invokeMethod(Object obj, String methodName, String parameter) {
+        try {
+<span class="nc" id="L27">            Method method = obj.getClass().getMethod(methodName, String.class);</span>
+<span class="nc" id="L28">            method.invoke(obj, parameter);</span>
+<span class="nc" id="L29">        } catch (NoSuchMethodException e) {</span>
+<span class="nc" id="L30">            System.out.println(&quot;Method not found: &quot; + methodName);</span>
+<span class="nc" id="L31">        } catch (Exception e) {</span>
+<span class="nc" id="L32">            e.printStackTrace();</span>
+<span class="nc" id="L33">        }</span>
+<span class="nc" id="L34">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
