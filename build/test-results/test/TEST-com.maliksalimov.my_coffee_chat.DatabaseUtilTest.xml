@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-03-29T20:21:02.547Z" hostname="Maliks-MacBook-Air.local" time="0.025">
+<testsuite name="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-03-29T20:33:48.290Z" hostname="Maliks-MacBook-Air.local" time="0.023">
   <properties/>
   <testcase name="getting_messages_should_return_empty_list_on_fresh_database()" classname="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" time="0.005"/>
-  <testcase name="saving_message_with_extremely_long_text_should_not_throw()" classname="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" time="0.003"/>
+  <testcase name="saving_message_with_extremely_long_text_should_not_throw()" classname="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" time="0.005"/>
   <testcase name="get_all_messages_should_return_empty_list_when_no_data()" classname="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" time="0.002"/>
-  <testcase name="get_all_messages_should_return_records_in_insert_order()" classname="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" time="0.003"/>
+  <testcase name="get_all_messages_should_return_records_in_insert_order()" classname="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" time="0.004"/>
   <testcase name="save_message_should_persist_message()" classname="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" time="0.002"/>
-  <testcase name="initialize_database_should_be_idempotent()" classname="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" time="0.006"/>
+  <testcase name="initialize_database_should_be_idempotent()" classname="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" time="0.002"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
