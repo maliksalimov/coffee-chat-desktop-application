@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-03-29T20:33:48.290Z" hostname="Maliks-MacBook-Air.local" time="0.023">
+<testsuite name="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-04-01T13:57:06.458Z" hostname="Maliks-MacBook-Air.local" time="0.024">
   <properties/>
   <testcase name="getting_messages_should_return_empty_list_on_fresh_database()" classname="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" time="0.005"/>
   <testcase name="saving_message_with_extremely_long_text_should_not_throw()" classname="com.maliksalimov.my_coffee_chat.DatabaseUtilTest" time="0.005"/>
