@@ -4,15 +4,16 @@ import com.maliksalimov.my_coffee_chat.database.DatabaseUtil;
 import com.maliksalimov.my_coffee_chat.ui.ChatApplication;
 import javafx.application.Application;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
-<span class="nc" id="L9">public class MyCoffeeChatApplication {</span>
+@EnableAsync
+<span class="fc" id="L11">public class MyCoffeeChatApplication {</span>
 
     public static void main(String[] args) {
-<span class="nc" id="L12">        DatabaseUtil.initializeDatabase();</span>
-
-<span class="nc" id="L14">        Application.launch(ChatApplication.class, args);</span>
-<span class="nc" id="L15">    }</span>
+<span class="nc" id="L14">        DatabaseUtil.initializeDatabase();</span>
+<span class="nc" id="L15">        Application.launch(ChatApplication.class, args);</span>
+<span class="nc" id="L16">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

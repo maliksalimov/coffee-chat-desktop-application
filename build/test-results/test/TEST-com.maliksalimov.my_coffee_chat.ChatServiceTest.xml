@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.maliksalimov.my_coffee_chat.ChatServiceTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-04-03T12:10:38.625Z" hostname="Maliks-MacBook-Air.local" time="0.067">
+  <properties/>
+  <testcase name="get_all_messages_should_call_repository_find_all_once()" classname="com.maliksalimov.my_coffee_chat.ChatServiceTest" time="0.063"/>
+  <testcase name="save_message_should_call_repository_save_once()" classname="com.maliksalimov.my_coffee_chat.ChatServiceTest" time="0.002"/>
+  <testcase name="get_messages_by_sender_should_call_repository_with_correct_argument()" classname="com.maliksalimov.my_coffee_chat.ChatServiceTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

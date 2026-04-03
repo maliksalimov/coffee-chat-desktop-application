@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.maliksalimov.my_coffee_chat.ChatControllerIntegrationTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-04-03T12:10:33.530Z" hostname="Maliks-MacBook-Air.local" time="5.091">
+  <properties/>
+  <testcase name="post_send_should_return_200_with_saved_message()" classname="com.maliksalimov.my_coffee_chat.ChatControllerIntegrationTest" time="0.158"/>
+  <testcase name="get_messages_by_sender_should_return_empty_list_for_unknown_sender()" classname="com.maliksalimov.my_coffee_chat.ChatControllerIntegrationTest" time="0.016"/>
+  <testcase name="get_all_messages_should_return_200_with_message_list()" classname="com.maliksalimov.my_coffee_chat.ChatControllerIntegrationTest" time="0.007"/>
+  <testcase name="post_send_should_return_message_with_correct_sender()" classname="com.maliksalimov.my_coffee_chat.ChatControllerIntegrationTest" time="0.008"/>
+  <testcase name="get_messages_by_sender_should_return_200_with_filtered_messages()" classname="com.maliksalimov.my_coffee_chat.ChatControllerIntegrationTest" time="0.004"/>
+  <testcase name="get_all_messages_should_return_empty_list_when_no_messages_exist()" classname="com.maliksalimov.my_coffee_chat.ChatControllerIntegrationTest" time="0.003"/>
+  <system-out><![CDATA[16:10:33.689 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.maliksalimov.my_coffee_chat.ChatControllerIntegrationTest]: ChatControllerIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+16:10:33.868 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.maliksalimov.my_coffee_chat.MyCoffeeChatApplication for test class com.maliksalimov.my_coffee_chat.ChatControllerIntegrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.3)
+
+2026-04-03T16:10:34.471+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] c.m.m.ChatControllerIntegrationTest      : Starting ChatControllerIntegrationTest using Java 25.0.1 with PID 32289 (started by maliksalimov in /Users/maliksalimov/coffee-shop-multithread/my_coffee_chat)
+2026-04-03T16:10:34.473+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] c.m.m.ChatControllerIntegrationTest      : No active profile set, falling back to 1 default profile: "default"
+2026-04-03T16:10:35.010+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-03T16:10:35.075+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 52 ms. Found 1 JPA repository interface.
+2026-04-03T16:10:36.050+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 0 (http)
+2026-04-03T16:10:36.064+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-03T16:10:36.064+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.36]
+2026-04-03T16:10:36.106+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-03T16:10:36.107+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1616 ms
+2026-04-03T16:10:36.243+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-03T16:10:36.291+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.8.Final
+2026-04-03T16:10:36.324+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-03T16:10:36.492+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-03T16:10:36.522+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-03T16:10:36.941+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@39c76fc8
+2026-04-03T16:10:36.943+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-03T16:10:36.980+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 3.45.1
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-03T16:10:37.688+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-03T16:10:37.719+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-03T16:10:37.765+04:00  WARN 32289 --- [my_coffee_chat] [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-03T16:10:38.276+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring TestDispatcherServlet ''
+2026-04-03T16:10:38.277+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-04-03T16:10:38.277+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-04-03T16:10:38.410+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 49778 (http) with context path '/'
+2026-04-03T16:10:38.416+04:00  INFO 32289 --- [my_coffee_chat] [    Test worker] c.m.m.ChatControllerIntegrationTest      : Started ChatControllerIntegrationTest in 4.373 seconds (process running for 5.766)
+]]></system-out>
+  <system-err><![CDATA[Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build what is described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (/Users/maliksalimov/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.15.11/a38b16385e867f59a641330f0362ebe742788ed8/byte-buddy-agent-1.15.11.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+</testsuite>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.maliksalimov.my_coffee_chat.CoffeeShopSingletonTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-04-03T12:10:38.722Z" hostname="Maliks-MacBook-Air.local" time="0.007">
+  <properties/>
+  <testcase name="get_instance_should_always_return_same_singleton()" classname="com.maliksalimov.my_coffee_chat.CoffeeShopSingletonTest" time="0.002"/>
+  <testcase name="receive_message_with_null_should_throw_null_pointer_exception()" classname="com.maliksalimov.my_coffee_chat.CoffeeShopSingletonTest" time="0.002"/>
+  <testcase name="start_baristas_should_not_throw_when_called_multiple_times()" classname="com.maliksalimov.my_coffee_chat.CoffeeShopSingletonTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

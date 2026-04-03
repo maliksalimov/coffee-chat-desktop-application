@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CoffeeShopDemo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">my_coffee_chat</a> &gt; <a href="index.source.html" class="el_package">com.maliksalimov.my_coffee_chat.framework</a> &gt; <span class="el_source">CoffeeShopDemo.java</span></div><h1>CoffeeShopDemo.java</h1><pre class="source lang-java linenums">package com.maliksalimov.my_coffee_chat.framework;
+
+/**
+ * Demonstration implementation of {@link BusinessObject}.
+ *
+ * &lt;p&gt;Shows how to wire handler methods into the annotation-driven framework.
+ * {@link InteractionHandler} will discover {@code handleOrder} and
+ * {@code handleChat} automatically via reflection — no registration required.
+ *
+ * &lt;p&gt;This class is intentionally minimal. For the full production
+ * implementation see {@code com.maliksalimov.my_coffee_chat.chat.CoffeeShop}.
+ */
+<span class="nc" id="L13">public class CoffeeShopDemo implements BusinessObject {</span>
+
+    /**
+     * Handles an incoming order request.
+     *
+     * @param orderDetails the order payload, e.g. &quot;1 Cappuccino&quot;
+     */
+    @OrderHandler
+    public void handleOrder(String orderDetails) {
+<span class="nc" id="L22">        System.out.println(&quot;Order received: &quot; + orderDetails);</span>
+<span class="nc" id="L23">    }</span>
+
+    /**
+     * Handles an incoming chat message.
+     *
+     * @param message the chat payload, e.g. &quot;Hello, barista!&quot;
+     */
+    @ChatHandler
+    public void handleChat(String message) {
+<span class="nc" id="L32">        System.out.println(&quot;Chat message: &quot; + message);</span>
+<span class="nc" id="L33">    }</span>
+
+    /**
+     * {@inheritDoc}
+     *
+     * &lt;p&gt;Delegates to {@link InteractionHandler} in production usage.
+     * Left empty here as dispatch is handled externally by the framework.
+     */
+    @Override
+    public void processRequest(String request) {
+<span class="nc" id="L43">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
