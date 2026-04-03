@@ -8,9 +8,9 @@ public class OrderEventPublisher {
 
     private final ApplicationEventPublisher eventPublisher;
 
-<span class="nc" id="L11">    public OrderEventPublisher(ApplicationEventPublisher eventPublisher) {</span>
-<span class="nc" id="L12">        this.eventPublisher = eventPublisher;</span>
-<span class="nc" id="L13">    }</span>
+<span class="fc" id="L11">    public OrderEventPublisher(ApplicationEventPublisher eventPublisher) {</span>
+<span class="fc" id="L12">        this.eventPublisher = eventPublisher;</span>
+<span class="fc" id="L13">    }</span>
 
     public void publishOrderReadyEvent(String customerName, String orderDetails){
 <span class="nc" id="L16">        eventPublisher.publishEvent(new OrderReadyEvent(this, customerName, orderDetails));</span>

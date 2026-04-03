@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.maliksalimov.my_coffee_chat.OrderQueueTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-04-03T11:00:43.333Z" hostname="Maliks-MacBook-Air.local" time="0.065">
+<testsuite name="com.maliksalimov.my_coffee_chat.OrderQueueTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-04-03T12:10:39.774Z" hostname="Maliks-MacBook-Air.local" time="0.043">
   <properties/>
-  <testcase name="processed_message_should_be_saved_to_database()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.003"/>
-  <testcase name="message_should_be_processed_case_insensitively_by_barista()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.003"/>
-  <testcase name="message_should_be_received_by_barista()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.003"/>
-  <testcase name="start_baristas_should_be_idempotent()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.002"/>
-  <testcase name="message_should_be_ignored_by_barista()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.003"/>
+  <testcase name="processed_message_should_be_saved_to_database()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.004"/>
+  <testcase name="message_should_be_processed_case_insensitively_by_barista()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.002"/>
+  <testcase name="message_should_be_received_by_barista()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.002"/>
+  <testcase name="start_baristas_should_be_idempotent()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.001"/>
+  <testcase name="message_should_be_ignored_by_barista()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.002"/>
   <testcase name="null_message_should_throw_exception()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.001"/>
-  <testcase name="message_should_be_processed_by_barista()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.002"/>
-  <testcase name="multiple_concurrent_messages_should_all_be_processed()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.046"/>
+  <testcase name="message_should_be_processed_by_barista()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.003"/>
+  <testcase name="multiple_concurrent_messages_should_all_be_processed()" classname="com.maliksalimov.my_coffee_chat.OrderQueueTest" time="0.027"/>
   <system-out><![CDATA[Barista 6 Processing order: order mocha
 Barista 6 Sending response: Your order has been placed: order mocha
 Barista 7 Processing order: Please ORDER cappuccino
@@ -25,20 +25,20 @@ Barista 3 Processing order: order coffee 2
 Barista 6 Processing order: order coffee 5
 Barista 4 Processing order: order coffee 3
 Barista 5 Processing order: order coffee 4
-Barista 8 Processing order: order coffee 7
 Barista 7 Processing order: order coffee 6
-Barista 3 Sending response: Your order has been placed: order coffee 2
 Barista 9 Processing order: order coffee 8
+Barista 8 Processing order: order coffee 7
 Barista 10 Processing order: order coffee 9
-Barista 4 Sending response: Your order has been placed: order coffee 3
-Barista 9 Sending response: Your order has been placed: order coffee 8
-Barista 10 Sending response: Your order has been placed: order coffee 9
-Barista 7 Sending response: Your order has been placed: order coffee 6
-Barista 8 Sending response: Your order has been placed: order coffee 7
-Barista 2 Sending response: Your order has been placed: order coffee 1
-Barista 6 Sending response: Your order has been placed: order coffee 5
 Barista 1 Sending response: Your order has been placed: order coffee 0
+Barista 8 Sending response: Your order has been placed: order coffee 7
+Barista 10 Sending response: Your order has been placed: order coffee 9
+Barista 4 Sending response: Your order has been placed: order coffee 3
 Barista 5 Sending response: Your order has been placed: order coffee 4
+Barista 9 Sending response: Your order has been placed: order coffee 8
+Barista 2 Sending response: Your order has been placed: order coffee 1
+Barista 3 Sending response: Your order has been placed: order coffee 2
+Barista 6 Sending response: Your order has been placed: order coffee 5
+Barista 7 Sending response: Your order has been placed: order coffee 6
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

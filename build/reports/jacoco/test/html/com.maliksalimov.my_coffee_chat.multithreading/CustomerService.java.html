@@ -8,10 +8,10 @@ public class CustomerService {
     private final BaristaService baristaService;
     private final OrderQueue orderQueue;
 
-<span class="nc" id="L11">    public CustomerService(BaristaService baristaService, OrderQueue orderQueue) {</span>
-<span class="nc" id="L12">        this.baristaService = baristaService;</span>
-<span class="nc" id="L13">        this.orderQueue = orderQueue;</span>
-<span class="nc" id="L14">    }</span>
+<span class="fc" id="L11">    public CustomerService(BaristaService baristaService, OrderQueue orderQueue) {</span>
+<span class="fc" id="L12">        this.baristaService = baristaService;</span>
+<span class="fc" id="L13">        this.orderQueue = orderQueue;</span>
+<span class="fc" id="L14">    }</span>
 
     public void placeOrder(String customerName, String coffeeType){
 <span class="nc" id="L17">        Order order = new Order(customerName, coffeeType);</span>

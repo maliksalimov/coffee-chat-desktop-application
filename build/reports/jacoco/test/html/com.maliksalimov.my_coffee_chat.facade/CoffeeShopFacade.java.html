@@ -24,15 +24,15 @@ public class CoffeeShopFacade {
 
     public CoffeeShopFacade(CoffeeFactory coffeeFactory, DecoratorService decoratorService,
                             OrderEventPublisher orderEventPublisher, PaymentService paymentService,
-<span class="nc" id="L27">                            CoffeeShopManager coffeeShopManager, PricingStrategy pricingStrategy, OrderCommandProcessor orderCommandProcessor) {</span>
-<span class="nc" id="L28">        this.coffeeFactory = coffeeFactory;</span>
-<span class="nc" id="L29">        this.decoratorService = decoratorService;</span>
-<span class="nc" id="L30">        this.eventPublisher = orderEventPublisher;</span>
-<span class="nc" id="L31">        this.paymentService = paymentService;</span>
-<span class="nc" id="L32">        this.coffeeShopManager = coffeeShopManager;</span>
-<span class="nc" id="L33">        this.pricingStrategy = pricingStrategy;</span>
-<span class="nc" id="L34">        this.orderCommandProcessor = orderCommandProcessor;</span>
-<span class="nc" id="L35">    }</span>
+<span class="fc" id="L27">                            CoffeeShopManager coffeeShopManager, PricingStrategy pricingStrategy, OrderCommandProcessor orderCommandProcessor) {</span>
+<span class="fc" id="L28">        this.coffeeFactory = coffeeFactory;</span>
+<span class="fc" id="L29">        this.decoratorService = decoratorService;</span>
+<span class="fc" id="L30">        this.eventPublisher = orderEventPublisher;</span>
+<span class="fc" id="L31">        this.paymentService = paymentService;</span>
+<span class="fc" id="L32">        this.coffeeShopManager = coffeeShopManager;</span>
+<span class="fc" id="L33">        this.pricingStrategy = pricingStrategy;</span>
+<span class="fc" id="L34">        this.orderCommandProcessor = orderCommandProcessor;</span>
+<span class="fc" id="L35">    }</span>
 
     public String placeOrder(String customerName, String coffeeType,
                              boolean withMilk, boolean withSugar){

@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 public class PaymentService {
     private final PaymentProcessor paymentProcessor;
 
-<span class="nc" id="L9">    public PaymentService(PaymentProcessor paymentProcessor) {</span>
-<span class="nc" id="L10">        this.paymentProcessor = paymentProcessor;</span>
-<span class="nc" id="L11">    }</span>
+<span class="fc" id="L9">    public PaymentService(PaymentProcessor paymentProcessor) {</span>
+<span class="fc" id="L10">        this.paymentProcessor = paymentProcessor;</span>
+<span class="fc" id="L11">    }</span>
 
     public boolean processPayment(String customerName, double amount){
 <span class="nc" id="L14">        return paymentProcessor.processPayment(customerName, amount);</span>
