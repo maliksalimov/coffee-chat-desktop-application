@@ -6,21 +6,21 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Component
-<span class="nc" id="L9">public class OrderQueue {</span>
+<span class="fc" id="L9">public class OrderQueue {</span>
 
-<span class="nc" id="L11">    private final BlockingQueue&lt;Order&gt; queue = new LinkedBlockingQueue&lt;&gt;();</span>
+<span class="fc" id="L11">    private final BlockingQueue&lt;Order&gt; queue = new LinkedBlockingQueue&lt;&gt;();</span>
 
     public void addOrder(Order order){
         try{
-<span class="nc" id="L15">            queue.put(order);</span>
+<span class="fc" id="L15">            queue.put(order);</span>
 <span class="nc" id="L16">        } catch (InterruptedException e) {</span>
 <span class="nc" id="L17">            Thread.currentThread().interrupt();</span>
-<span class="nc" id="L18">        }</span>
-<span class="nc" id="L19">    }</span>
+<span class="fc" id="L18">        }</span>
+<span class="fc" id="L19">    }</span>
 
     public Order takeOrder() throws InterruptedException {
         try{
-<span class="nc" id="L23">            return queue.take();</span>
+<span class="fc" id="L23">            return queue.take();</span>
 <span class="nc" id="L24">        } catch (InterruptedException e) {</span>
 <span class="nc" id="L25">            Thread.currentThread().interrupt();</span>
 <span class="nc" id="L26">            return null;</span>
@@ -28,7 +28,7 @@ import java.util.concurrent.LinkedBlockingQueue;
     }
 
     public int size(){
-<span class="nc" id="L31">        return queue.size();</span>
+<span class="fc" id="L31">        return queue.size();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

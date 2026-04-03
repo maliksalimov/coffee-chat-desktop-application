@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.maliksalimov.my_coffee_chat.CoffeeShopTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-04-01T14:35:12.838Z" hostname="Maliks-MacBook-Air.local" time="1.026">
+<testsuite name="com.maliksalimov.my_coffee_chat.CoffeeShopTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-04-03T11:00:42.280Z" hostname="Maliks-MacBook-Air.local" time="1.024">
   <properties/>
   <testcase name="set_on_response_should_replace_previous_callback()" classname="com.maliksalimov.my_coffee_chat.CoffeeShopTest" time="0.003"/>
   <testcase name="processing_message_with_null_callback_should_not_throw()" classname="com.maliksalimov.my_coffee_chat.CoffeeShopTest" time="1.008"/>
-  <testcase name="get_instance_should_return_singleton_instance()" classname="com.maliksalimov.my_coffee_chat.CoffeeShopTest" time="0.007"/>
-  <testcase name="start_baristas_should_be_safe_to_call_multiple_times()" classname="com.maliksalimov.my_coffee_chat.CoffeeShopTest" time="0.005"/>
+  <testcase name="get_instance_should_return_singleton_instance()" classname="com.maliksalimov.my_coffee_chat.CoffeeShopTest" time="0.006"/>
+  <testcase name="start_baristas_should_be_safe_to_call_multiple_times()" classname="com.maliksalimov.my_coffee_chat.CoffeeShopTest" time="0.004"/>
   <system-out><![CDATA[Barista 4 Processing order: order flat white
 Barista 4 Sending response: Your order has been placed: order flat white
 Barista 5 Processing order: order latte
