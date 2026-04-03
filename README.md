@@ -1,6 +1,6 @@
 # My Coffee Chat
 
-A multithreaded Java desktop application simulating a real-time coffee shop ordering and chat system. Built with JavaFX for the GUI, Spring Boot for dependency injection and application bootstrapping, SQLite for persistent message storage, and a custom reflection-based annotation framework for dynamic request dispatching. The project demonstrates ten software design patterns working together through a single facade entry point.
+A multithreaded Java desktop application simulating a real-time coffee shop ordering and chat system. Built with JavaFX for the GUI, Spring Boot for dependency injection and application bootstrapping, SQLite for persistent message storage, and a custom reflection-based annotation framework for dynamic request dispatching. The project demonstrates ten classic software design patterns working together through a single facade entry point.
 
 **Author:** Malik Salimov
 
@@ -12,7 +12,7 @@ A multithreaded Java desktop application simulating a real-time coffee shop orde
 - [Features](#features)
 - [Architecture](#architecture)
 - [Design Patterns](#design-patterns)
-- [Framework](#framework)
+- [Custom Framework](#custom-framework)
 - [REST API](#rest-api)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
@@ -27,20 +27,29 @@ A multithreaded Java desktop application simulating a real-time coffee shop orde
 
 ## Overview
 
-My Coffee Chat is a Spring Boot desktop application that combines concurrent programming, classic design patterns, and a custom annotation-driven framework. Customers interact through a JavaFX GUI; a pool of 10 daemon barista threads processes incoming messages concurrently via a `LinkedBlockingQueue`, persists all conversations to a local SQLite database, and pushes responses back to the UI through a thread-safe callback.
+My Coffee Chat is a Spring Boot desktop application that combines concurrent programming, classic design patterns, and a custom annotation-driven framework. Customers interact through a JavaFX GUI. A pool of 10 daemon barista threads processes incoming messages concurrently via a `LinkedBlockingQueue`, persists all conversations to a local SQLite database, and pushes responses back to the UI through a thread-safe callback.
 
-The application also exposes a REST API for sending and retrieving chat messages, backed by Spring Data JPA and a separate SQLite table managed by Hibernate.
+The application also exposes a REST API for sending and retrieving chat messages, backed by Spring Data JPA and a dedicated `chat_messages` table managed by Hibernate.
+
+The project is structured across four incremental development phases:
+
+| Phase | Focus |
+|---|---|
+| Part 01 | Core multithreaded chat engine with JavaFX GUI and raw JDBC persistence |
+| Part 02 | Spring Async (`@Async`), `OrderQueue`, `BaristaService`, `CustomerService` |
+| Part 03 | Spring Data JPA, Hibernate, ten design patterns, REST API |
+| Part 04 | Comprehensive test suite — unit, integration, and JaCoCo coverage |
 
 ---
 
 ## Features
 
-- **Real-time multithreaded messaging** — 10 barista daemon threads process orders concurrently using a producer-consumer queue
+- **Real-time multithreaded messaging** — 10 barista daemon threads process orders concurrently via a producer-consumer queue
 - **Order detection** — keyword-based routing distinguishes order requests from general messages
 - **Persistent chat history** — all messages stored in SQLite and reloaded on startup
-- **Image uploads** — customers can attach JPG/PNG images; previewed as 200x200 thumbnails
-- **Dark-themed UI** — Catppuccin-inspired JavaFX CSS styling
-- **REST API** — send and retrieve messages over HTTP via Spring MVC
+- **Image uploads** — customers can attach JPG/PNG images, previewed as 200x200 thumbnails
+- **Dark-themed desktop UI** — Catppuccin-inspired JavaFX CSS styling
+- **REST API** — send and retrieve chat messages over HTTP via Spring MVC
 - **Ten design patterns** — Factory, Singleton, Observer, Strategy, Decorator, Command, Adapter, Facade, Prototype, and Template Method, all coordinated through `CoffeeShopFacade`
 - **Custom annotation framework** — reflection-based request dispatching with a `ConcurrentHashMap` method cache; no hardcoded routing logic
 
@@ -54,85 +63,96 @@ Customer Input (JavaFX UI)
         v
   Chat.sendMessage()
         |
-        +---> DatabaseUtil.saveMessage()  -->  SQLite (messages table)
+        +---> DatabaseUtil.saveMessage()  -------> SQLite (messages table)
         |
-        +--->  CoffeeShop.receiveMessage()  -->  LinkedBlockingQueue
-                                                        |
-                                        +--------------+---------------+
-                                   Barista 1  ...  Barista 10  (daemon threads)
-                                        |
-                               processOrders() loop
-                                        |
-                              contains "order"?
-                               +- YES --> "Your order has been placed: ..."
-                               +- NO  --> "I don't understand your order: ..."
-                                        |
-                               DatabaseUtil.saveMessage()
-                                        |
-                               onResponse callback
-                                        |
-                               Platform.runLater()  -->  UI Update
+        +---> CoffeeShop.receiveMessage() -------> LinkedBlockingQueue
+                                                          |
+                                          +--------------+---------------+
+                                     Barista 1  ...  Barista 10  (daemon threads)
+                                          |
+                                 processOrders() loop
+                                          |
+                                contains "order"?
+                                 +- YES --> "Your order has been placed: ..."
+                                 +- NO  --> "I don't understand your order: ..."
+                                          |
+                                 DatabaseUtil.saveMessage()
+                                          |
+                                 onResponse callback
+                                          |
+                                 Platform.runLater() -------> UI update
+
+REST Client
+        |
+        v
+  POST /api/chat/send
+  GET  /api/chat/messages
+  GET  /api/chat/messages/{sender}
+        |
+        v
+  ChatController --> ChatService --> ChatRepository (JPA) --> SQLite (chat_messages table)
 ```
 
 ### Key Components
 
 | Component | Responsibility |
 |---|---|
-| `MyCoffeeChatApplication` | Entry point — initializes DB, starts barista threads, launches JavaFX |
-| `CoffeeShop` | Singleton — owns the `LinkedBlockingQueue` and 10 daemon barista threads |
-| `Chat` | Customer-facing controller — validates, saves, and forwards messages |
-| `DatabaseUtil` | JDBC utility for all raw SQLite operations (init, save, fetch) |
-| `ChatApplication` | JavaFX stage/scene — renders chat, handles input, manages image gallery |
-| `CoffeeShopFacade` | Orchestrates all ten design patterns in a single `placeOrder()` call |
-| `ChatService` | Spring service — delegates CRUD to `ChatRepository` via JPA |
-| `ChatController` | Spring MVC REST controller — exposes `/api/chat` endpoints |
-| `Message` | Legacy data model — `id`, `sender`, `text`, `timestamp` |
+| `MyCoffeeChatApplication` | Entry point — initializes the database, starts barista threads, and launches JavaFX |
+| `CoffeeShop` | Singleton — owns the `LinkedBlockingQueue` and manages 10 daemon barista threads |
+| `Chat` | Customer-facing controller — validates, saves, and forwards messages to the queue |
+| `DatabaseUtil` | Raw JDBC utility for all SQLite operations (schema init, insert, fetch) |
+| `ChatApplication` | JavaFX stage and scene — renders the chat window, handles input, and manages the image gallery |
+| `CoffeeShopFacade` | Orchestrates all ten design patterns through a single `placeOrder()` call |
+| `ChatController` | Spring MVC REST controller — exposes the `/api/chat` endpoints |
+| `ChatService` | Spring service — delegates CRUD operations to `ChatRepository` |
+| `ChatRepository` | Spring Data JPA repository — provides `findAll`, `save`, and `findBySender` |
+| `Message` | Legacy JDBC data model — `id`, `sender`, `text`, `timestamp` |
 | `ChatMessage` | JPA entity — `id`, `sender`, `message`, `timestamp` (auto-set via `@PrePersist`) |
 
 ---
 
 ## Design Patterns
 
-| Pattern | Package | Key Classes |
-|---|---|---|
-| Singleton | `chat/`, `singleton/` | `CoffeeShop` (synchronized `getInstance()`), `CoffeeShopManager` (`@Component`) |
-| Factory | `factory/` | `CoffeeFactory` (`@Service`), `Coffee` (abstract), `Espresso`, `Cappuccino` |
-| Observer | `observer/` | `OrderEventPublisher` (`ApplicationEventPublisher`), `OrderNotificationListener` (`@EventListener`), `OrderReadyEvent` |
-| Strategy | `strategy/` | `PricingStrategy` (interface), `RegularPricingStrategy` (`@Primary`), `SilverPricingStrategy`, `GoldPricingStrategy` |
-| Decorator | `decorator/` | `CoffeeDecorator`, `MilkDecorator`, `SugarDecorator`, `DecoratorService` |
-| Command | `command/` | `OrderCommand` (interface), `PlaceOrderCommand`, `CancelOrderCommand`, `OrderCommandProcessor` |
-| Adapter | `adapter/` | `PaymentProcessor` (interface), `ExternalPaymentService`, `PaymentAdapter`, `PaymentService` |
-| Facade | `facade/` | `CoffeeShopFacade` — single `placeOrder()` entry point coordinating all patterns |
-| Prototype | `prototype/` | `CoffeeOrder` (`@Scope("prototype")`), `CoffeeOrderPrototypeService` |
-| Template Method | `template/` | `CoffeePreparationTemplate` (abstract), `EspressoPreparation`, `CappuccinoPreparation` |
+| Pattern | Package | Key Classes | Notes |
+|---|---|---|---|
+| Singleton | `chat/`, `singleton/` | `CoffeeShop`, `CoffeeShopManager` | `CoffeeShop` uses synchronized `getInstance()`; `CoffeeShopManager` is a Spring `@Component` |
+| Factory | `factory/` | `CoffeeFactory`, `Coffee`, `Espresso`, `Cappuccino` | `CoffeeFactory` is a `@Service`; `Coffee` is the abstract product |
+| Observer | `observer/` | `OrderEventPublisher`, `OrderNotificationListener`, `OrderReadyEvent` | Uses Spring's `ApplicationEventPublisher` and `@EventListener` for full decoupling |
+| Strategy | `strategy/` | `PricingStrategy`, `RegularPricingStrategy`, `SilverPricingStrategy`, `GoldPricingStrategy` | `RegularPricingStrategy` is `@Primary` to resolve Spring autowiring ambiguity |
+| Decorator | `decorator/` | `CoffeeDecorator`, `MilkDecorator`, `SugarDecorator`, `DecoratorService` | Wraps `Coffee` instances at runtime to add cost and description |
+| Command | `command/` | `OrderCommand`, `PlaceOrderCommand`, `CancelOrderCommand`, `OrderCommandProcessor` | `OrderCommandProcessor` queues and executes command objects |
+| Adapter | `adapter/` | `PaymentProcessor`, `ExternalPaymentService`, `PaymentAdapter`, `PaymentService` | `PaymentAdapter` bridges the internal `PaymentProcessor` interface to `ExternalPaymentService` |
+| Facade | `facade/` | `CoffeeShopFacade` | Single `placeOrder()` entry point that coordinates all ten patterns in sequence |
+| Prototype | `prototype/` | `CoffeeOrder`, `CoffeeOrderPrototypeService` | `CoffeeOrder` is `@Scope("prototype")` — each `getBean` returns a fresh instance |
+| Template Method | `template/` | `CoffeePreparationTemplate`, `EspressoPreparation`, `CappuccinoPreparation` | Abstract class defines the preparation steps; subclasses provide the concrete implementation |
 
 ---
 
-## Framework
+## Custom Framework
 
 The `framework` package implements a lightweight annotation-driven dispatch system using Java Reflection.
 
 ### How It Works
 
 1. Handler methods are annotated with `@OrderHandler` or `@ChatHandler`
-2. Both annotations are themselves annotated with `@RequestMappingMeta` (meta-annotation)
-3. `InteractionHandler` scans all methods of a `BusinessObject` at runtime and caches results in a `ConcurrentHashMap` to avoid repeated reflection scans
-4. Any method whose annotation is marked with `@RequestMappingMeta` is invoked dynamically
+2. Both annotations are meta-annotated with `@RequestMappingMeta`
+3. `InteractionHandler` scans all methods of a `BusinessObject` at startup and caches the results in a `ConcurrentHashMap` — reflection occurs once per class, not once per request
+4. On each invocation, the cached method list is consulted and any method whose annotation carries `@RequestMappingMeta` is called dynamically via `ReflectionUtil`
 
-No `if-else` routing chains. Adding a new request type requires only a new annotation and a new annotated method.
+Adding a new request type requires only a new annotation (itself annotated with `@RequestMappingMeta`) and a new annotated method — no routing logic to modify.
 
 ### Framework Components
 
 | Class | Responsibility |
 |---|---|
-| `BusinessObject` | Marker interface for all dispatchable business classes |
+| `BusinessObject` | Marker interface that all dispatchable business classes implement |
 | `RequestMappingMeta` | Meta-annotation that designates an annotation as a request handler |
-| `OrderHandler` | Annotation for order-handling methods |
-| `ChatHandler` | Annotation for chat-handling methods |
-| `InteractionHandler` | Scans methods via reflection, caches results, and dispatches requests |
-| `ReflectionUtil` | Utility for direct method invocation by name |
-| `CoffeeShopDemo` | Demo `BusinessObject` implementation |
-| `BusinessTestClient` | Client demonstrating the framework end-to-end |
+| `OrderHandler` | Annotation marking a method as an order handler |
+| `ChatHandler` | Annotation marking a method as a chat handler |
+| `InteractionHandler` | Scans methods via reflection, caches by class, and dispatches requests |
+| `ReflectionUtil` | Utility for invoking methods by name using reflection |
+| `CoffeeShopDemo` | Reference implementation of `BusinessObject` |
+| `BusinessTestClient` | Client that demonstrates the framework end-to-end |
 
 ### Example
 
@@ -148,13 +168,37 @@ handler.handleInteraction(coffeeShop, "chat", "Hello, barista!");
 
 ## REST API
 
-All endpoints are served by `ChatController` and backed by `ChatService` / `ChatRepository` (Spring Data JPA, `chat_messages` table).
+All endpoints are served by `ChatController` under the `/api/chat` base path. The service layer is backed by Spring Data JPA and the `chat_messages` SQLite table.
 
-| Method | Endpoint | Request Body | Description |
-|---|---|---|---|
-| `POST` | `/api/chat/send` | `{ "sender": "Alice", "message": "Hello" }` | Save a new chat message |
-| `GET` | `/api/chat/messages` | — | Retrieve all messages |
-| `GET` | `/api/chat/messages/{sender}` | — | Retrieve all messages by a specific sender |
+### Endpoints
+
+| Method | Endpoint | Request Body | Response | Description |
+|---|---|---|---|---|
+| `POST` | `/api/chat/send` | `{ "sender": "Alice", "message": "Hello" }` | `ChatMessage` JSON | Persists and returns the saved message |
+| `GET` | `/api/chat/messages` | — | `ChatMessage[]` JSON | Returns all stored messages |
+| `GET` | `/api/chat/messages/{sender}` | — | `ChatMessage[]` JSON | Returns all messages from the given sender |
+
+### Response Schema
+
+```json
+{
+  "id": 1,
+  "sender": "Alice",
+  "message": "I would like to order a latte",
+  "timestamp": "2026-04-03T12:00:00"
+}
+```
+
+### Example
+
+```bash
+curl -X POST http://localhost:8080/api/chat/send \
+  -H "Content-Type: application/json" \
+  -d '{"sender": "Alice", "message": "order latte"}'
+
+curl http://localhost:8080/api/chat/messages
+curl http://localhost:8080/api/chat/messages/Alice
+```
 
 ---
 
@@ -162,15 +206,15 @@ All endpoints are served by `ChatController` and backed by `ChatService` / `Chat
 
 | Technology | Version | Purpose |
 |---|---|---|
-| Java | 21 | Core language |
-| Spring Boot | 3.4.3 | Application framework, DI, auto-configuration |
+| Java | 21 | Core language (source and target compatibility) |
+| Spring Boot | 3.4.3 | Application framework — DI, auto-configuration, embedded Tomcat |
 | JavaFX | 21 | Desktop GUI — controls, layouts, CSS styling |
-| Spring Data JPA | (Spring Boot managed) | Repository abstraction over Hibernate |
-| Hibernate Community SQLite Dialect | 6.0 | Hibernate dialect for SQLite |
+| Spring Data JPA | (Spring Boot managed) | Repository abstraction over Hibernate ORM |
+| Hibernate Community SQLite Dialect | 6.4.4 | Hibernate dialect for SQLite |
 | SQLite JDBC | 3.45.1.0 | Embedded database driver |
 | Gradle | 9.4 | Build tool and dependency management |
 | JUnit 5 | (Spring Boot managed) | Unit and integration testing |
-| Mockito | (Spring Boot managed) | Mocking framework for unit tests |
+| Mockito | (Spring Boot managed) | Mock and stub framework for unit tests |
 | JaCoCo | (Gradle plugin) | Test coverage reporting |
 
 ---
@@ -182,92 +226,96 @@ my_coffee_chat/
 +-- build.gradle
 +-- settings.gradle
 +-- README.md
-+-- my_coffee.db                                  # SQLite DB (auto-created at runtime)
++-- my_coffee.db                                     # SQLite database (auto-created on first run)
 |
 +-- src/
     +-- main/
     |   +-- java/com/maliksalimov/my_coffee_chat/
-    |   |   +-- MyCoffeeChatApplication.java
+    |   |   +-- MyCoffeeChatApplication.java          # @SpringBootApplication entry point
     |   |   +-- chat/
     |   |   |   +-- Chat.java
-    |   |   |   +-- CoffeeShop.java               # Singleton, LinkedBlockingQueue, 10 barista threads
+    |   |   |   +-- CoffeeShop.java                   # Singleton + LinkedBlockingQueue + 10 barista threads
     |   |   +-- chat2/
-    |   |   |   +-- ChatMessage.java              # JPA entity
-    |   |   |   +-- ChatRepository.java           # JpaRepository
-    |   |   |   +-- ChatService.java
-    |   |   |   +-- ChatController.java           # REST endpoints
+    |   |   |   +-- ChatMessage.java                  # @Entity mapped to chat_messages
+    |   |   |   +-- ChatRepository.java               # JpaRepository<ChatMessage, Long>
+    |   |   |   +-- ChatService.java                  # @Service
+    |   |   |   +-- ChatController.java               # @RestController /api/chat
     |   |   +-- database/
-    |   |   |   +-- DatabaseUtil.java             # Raw JDBC
+    |   |   |   +-- DatabaseUtil.java                 # Raw JDBC — init, save, fetch
     |   |   +-- model/
-    |   |   |   +-- Message.java
+    |   |   |   +-- Message.java                      # Legacy JDBC model
     |   |   +-- ui/
-    |   |   |   +-- ChatApplication.java          # JavaFX stage
+    |   |   |   +-- ChatApplication.java              # JavaFX Application subclass
     |   |   +-- framework/
-    |   |   |   +-- BusinessObject.java
-    |   |   |   +-- RequestMappingMeta.java
-    |   |   |   +-- OrderHandler.java
-    |   |   |   +-- ChatHandler.java
-    |   |   |   +-- InteractionHandler.java       # ConcurrentHashMap method cache
+    |   |   |   +-- BusinessObject.java               # Marker interface
+    |   |   |   +-- RequestMappingMeta.java           # Meta-annotation
+    |   |   |   +-- OrderHandler.java                 # Handler annotation
+    |   |   |   +-- ChatHandler.java                  # Handler annotation
+    |   |   |   +-- InteractionHandler.java           # Reflection dispatcher + ConcurrentHashMap cache
     |   |   |   +-- ReflectionUtil.java
     |   |   |   +-- CoffeeShopDemo.java
     |   |   |   +-- BusinessTestClient.java
     |   |   +-- singleton/
-    |   |   |   +-- CoffeeShopManager.java
+    |   |   |   +-- CoffeeShopManager.java            # @Component singleton
     |   |   +-- factory/
-    |   |   |   +-- Coffee.java
+    |   |   |   +-- Coffee.java                       # Abstract product
     |   |   |   +-- Espresso.java
     |   |   |   +-- Cappuccino.java
-    |   |   |   +-- CoffeeFactory.java
+    |   |   |   +-- CoffeeFactory.java                # @Service factory
     |   |   +-- observer/
     |   |   |   +-- OrderReadyEvent.java
-    |   |   |   +-- OrderNotificationListener.java
-    |   |   |   +-- OrderEventPublisher.java
+    |   |   |   +-- OrderNotificationListener.java    # @EventListener
+    |   |   |   +-- OrderEventPublisher.java          # ApplicationEventPublisher wrapper
     |   |   +-- strategy/
-    |   |   |   +-- PricingStrategy.java
-    |   |   |   +-- RegularPricingStrategy.java   # @Primary
+    |   |   |   +-- PricingStrategy.java              # Interface
+    |   |   |   +-- RegularPricingStrategy.java       # @Primary
     |   |   |   +-- SilverPricingStrategy.java
     |   |   |   +-- GoldPricingStrategy.java
     |   |   +-- decorator/
-    |   |   |   +-- CoffeeDecorator.java
+    |   |   |   +-- CoffeeDecorator.java              # Abstract decorator
     |   |   |   +-- MilkDecorator.java
     |   |   |   +-- SugarDecorator.java
     |   |   |   +-- DecoratorService.java
     |   |   +-- command/
-    |   |   |   +-- OrderCommand.java
+    |   |   |   +-- OrderCommand.java                 # Command interface
     |   |   |   +-- PlaceOrderCommand.java
     |   |   |   +-- CancelOrderCommand.java
     |   |   |   +-- OrderCommandProcessor.java
     |   |   +-- adapter/
-    |   |   |   +-- PaymentProcessor.java
-    |   |   |   +-- ExternalPaymentService.java
-    |   |   |   +-- PaymentAdapter.java
+    |   |   |   +-- PaymentProcessor.java             # Target interface
+    |   |   |   +-- ExternalPaymentService.java       # Adaptee
+    |   |   |   +-- PaymentAdapter.java               # Adapter
     |   |   |   +-- PaymentService.java
     |   |   +-- facade/
-    |   |   |   +-- CoffeeShopFacade.java
+    |   |   |   +-- CoffeeShopFacade.java             # Coordinates all 10 patterns
     |   |   +-- prototype/
-    |   |   |   +-- CoffeeOrder.java              # @Scope("prototype")
+    |   |   |   +-- CoffeeOrder.java                  # @Scope("prototype")
     |   |   |   +-- CoffeeOrderPrototypeService.java
     |   |   +-- template/
-    |   |   |   +-- CoffeePreparationTemplate.java
+    |   |   |   +-- CoffeePreparationTemplate.java    # Abstract template
     |   |   |   +-- EspressoPreparation.java
     |   |   |   +-- CappuccinoPreparation.java
     |   |   +-- multithreading/
     |   |       +-- Order.java
-    |   |       +-- OrderQueue.java               # LinkedBlockingQueue wrapper
-    |   |       +-- BaristaService.java           # @Async
+    |   |       +-- OrderQueue.java                   # LinkedBlockingQueue wrapper
+    |   |       +-- BaristaService.java               # @Async order processor
     |   |       +-- CustomerService.java
     |   +-- resources/
     |       +-- application.properties
     +-- test/
         +-- java/com/maliksalimov/my_coffee_chat/
-            +-- ChatTest.java
-            +-- CoffeeShopTest.java
-            +-- CoffeeShopSingletonTest.java
-            +-- DatabaseUtilTest.java
-            +-- OrderQueueTest.java
-            +-- OrderQueueUnitTest.java
-            +-- ChatServiceTest.java
-            +-- TestDatabaseSupport.java
+        |   +-- ChatTest.java
+        |   +-- CoffeeShopTest.java
+        |   +-- CoffeeShopSingletonTest.java
+        |   +-- DatabaseUtilTest.java
+        |   +-- OrderQueueTest.java
+        |   +-- OrderQueueUnitTest.java
+        |   +-- ChatServiceTest.java
+        |   +-- ChatControllerIntegrationTest.java    # @SpringBootTest + @MockitoBean
+        |   +-- TestDatabaseSupport.java
+        +-- resources/
+            +-- mockito-extensions/
+                +-- org.mockito.plugins.MockMaker     # Forces subclass mock maker for Java 21+ compatibility
 ```
 
 ---
@@ -276,8 +324,8 @@ my_coffee_chat/
 
 ### Prerequisites
 
-- Java 21 (Amazon Corretto or any JDK 21+)
-- Gradle 9.4+ (or use the included Gradle wrapper — no separate installation required)
+- Java 21+ (Amazon Corretto, Eclipse Temurin, or any compatible JDK)
+- No separate Gradle installation required — use the included `gradlew` wrapper
 
 ### Clone
 
@@ -298,7 +346,7 @@ cd coffee-chat-desktop-application
 ./gradlew run
 ```
 
-> JavaFX requires the JavaFX runtime on the module path. Use `./gradlew run` to launch the application. Do not use `java -jar` directly.
+> **Note:** JavaFX requires its runtime modules on the module path. Always use `./gradlew run` to launch the application. Running the JAR directly with `java -jar` will fail without additional module path configuration.
 
 ---
 
@@ -330,9 +378,9 @@ Click **Upload Image** and select a JPG or PNG file. The image appears as a 200x
 
 ## Database Schema
 
-The application uses two SQLite tables.
+The application maintains two independent SQLite tables. Both are stored in `my_coffee.db`, which is auto-created on the first run.
 
-### Legacy table — `messages` (raw JDBC, `DatabaseUtil`)
+### `messages` — legacy table (raw JDBC via `DatabaseUtil`)
 
 ```sql
 CREATE TABLE IF NOT EXISTS messages (
@@ -343,7 +391,7 @@ CREATE TABLE IF NOT EXISTS messages (
 );
 ```
 
-### JPA table — `chat_messages` (Hibernate, `ChatRepository`)
+### `chat_messages` — JPA table (Hibernate via `ChatRepository`)
 
 ```sql
 CREATE TABLE IF NOT EXISTS chat_messages (
@@ -354,7 +402,7 @@ CREATE TABLE IF NOT EXISTS chat_messages (
 );
 ```
 
-The `timestamp` column is populated automatically via the `@PrePersist` lifecycle hook on `ChatMessage`.
+The `timestamp` column in `chat_messages` is populated automatically by the `@PrePersist` lifecycle callback on `ChatMessage`, ensuring consistent timestamps regardless of how the entity is created.
 
 ---
 
@@ -379,18 +427,23 @@ Reports are available at:
 
 ### Test Classes
 
-| Class | What It Tests |
-|---|---|
-| `OrderQueueTest` | `CoffeeShop` message processing — order detection, case sensitivity, concurrent messages, DB persistence |
-| `OrderQueueUnitTest` | `OrderQueue` directly — `addOrder` size increase, `takeOrder` correctness, concurrent thread safety |
-| `ChatTest` | `Chat` — message validation, database persistence, callback invocation |
-| `DatabaseUtilTest` | `DatabaseUtil` — CRUD operations, insert ordering, empty initial state |
-| `CoffeeShopTest` | `CoffeeShop` — singleton lifecycle, callback replacement, idempotent `startBaristas` |
-| `CoffeeShopSingletonTest` | `CoffeeShop` — singleton identity, safe multiple `startBaristas` calls, `null` message throws `NullPointerException` |
-| `ChatServiceTest` | `ChatService` — Mockito unit tests verifying `save`, `findAll`, and `findBySender` delegation |
-| `TestDatabaseSupport` | Shared test utility — initializes and clears the SQLite `messages` table between tests |
+| Class | Type | What It Tests |
+|---|---|---|
+| `ChatTest` | Unit | `Chat` — message validation, database persistence, callback invocation |
+| `DatabaseUtilTest` | Unit | `DatabaseUtil` — schema creation, CRUD operations, insert ordering, empty initial state |
+| `OrderQueueTest` | Unit | `CoffeeShop` message pipeline — order detection, case sensitivity, concurrent processing, DB persistence |
+| `OrderQueueUnitTest` | Unit | `OrderQueue` directly — `addOrder` increases size, `takeOrder` returns the correct item, thread safety under 20 concurrent writers |
+| `CoffeeShopTest` | Unit | `CoffeeShop` — singleton lifecycle, callback replacement, idempotent `startBaristas` |
+| `CoffeeShopSingletonTest` | Unit | `CoffeeShop` — singleton identity via `assertSame`, null message throws `NullPointerException` |
+| `ChatServiceTest` | Unit | `ChatService` — Mockito mocks verify `save`, `findAll`, and `findBySender` are called exactly once with the correct arguments |
+| `ChatControllerIntegrationTest` | Integration | `ChatController` — all three REST endpoints via `MockMvc`; `@MockitoBean` stubs `ChatService` so no database is touched |
+| `TestDatabaseSupport` | Utility | Shared helper — initializes and clears the SQLite `messages` table between tests |
 
-All unit tests use plain JUnit 5 and Mockito. No `@SpringBootTest` or Spring context is loaded in unit test classes.
+### Notes
+
+- All unit tests use plain JUnit 5 with `@ExtendWith(MockitoExtension.class)`. No Spring context is loaded.
+- `ChatControllerIntegrationTest` uses `@SpringBootTest(webEnvironment = RANDOM_PORT)` with `@AutoConfigureMockMvc` and `@MockitoBean` (`@MockitoBean` is the Spring Boot 3.4.x replacement for the deprecated `@MockBean`).
+- `src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker` configures Mockito to use the **subclass mock maker** instead of the default inline mock maker. This is required for compatibility with Java 21+ where the inline mock maker's dynamic agent loading is restricted by the JVM.
 
 ---
 
@@ -402,13 +455,13 @@ All unit tests use plain JUnit 5 and Mockito. No `@SpringBootTest` or Spring con
 ./gradlew clean build
 ```
 
-The JAR is generated at:
+The executable JAR is generated at:
 
 ```
 build/libs/coffee-shop-app-1.0-SNAPSHOT.jar
 ```
 
-> JavaFX applications require the JavaFX runtime modules on the module path and cannot be launched with `java -jar` alone. Use `./gradlew run` for local execution.
+> JavaFX applications require the JavaFX runtime modules on the module path. The JAR cannot be run with `java -jar` alone on standard JDKs. Use `./gradlew run` for local execution.
 
 ---
 
@@ -416,17 +469,18 @@ build/libs/coffee-shop-app-1.0-SNAPSHOT.jar
 
 | Decision | Rationale |
 |---|---|
-| `LinkedBlockingQueue` for message passing | Thread-safe producer-consumer without explicit lock management; blocks producers only when the queue is full |
-| `@Async` on `BaristaService` | Non-blocking order processing — callers return immediately while processing continues on a Spring-managed thread pool |
-| `ConcurrentHashMap` cache in `InteractionHandler` | Reflection scanning is performed once per class and cached; avoids repeated method traversal on every request dispatch |
-| `@Primary` on `RegularPricingStrategy` | Resolves Spring's ambiguity when multiple `PricingStrategy` beans exist; no qualifier annotation needed at injection sites |
-| Constructor injection throughout | Explicit dependencies; enables immutable fields and straightforward unit testing without a Spring context |
-| `@Scope("prototype")` on `CoffeeOrder` | Ensures each `getBean` call returns a new instance; prevents shared mutable state across orders |
-| `ApplicationEventPublisher` for the Observer pattern | Fully decoupled publisher and listener — the publisher has no compile-time dependency on any listener |
-| `CoffeeShopFacade.placeOrder()` | Single entry point that coordinates all ten patterns; callers are isolated from internal pattern interactions |
-| `@PrePersist` for timestamp | Timestamp is set by the JPA lifecycle hook rather than by application code, keeping `ChatMessage` consistent regardless of how it is saved |
-| Daemon barista threads | JVM can shut down cleanly without waiting for barista threads to finish processing; threads block on `queue.take()` when idle |
-| SQLite with no server | Zero-configuration embedded persistence appropriate for a desktop application; the database file is created automatically on first run |
+| `LinkedBlockingQueue` for message passing | Thread-safe producer-consumer without explicit lock management; blocks producers naturally when the queue is at capacity |
+| `@Async` on `BaristaService` | Non-blocking order processing — the calling thread returns immediately while work continues on a Spring-managed thread pool |
+| `ConcurrentHashMap` cache in `InteractionHandler` | Reflection scanning is performed once per class on first access and cached; avoids re-scanning method arrays on every dispatch call |
+| `@Primary` on `RegularPricingStrategy` | Resolves Spring's ambiguity when multiple `PricingStrategy` beans are present; injection sites require no `@Qualifier` |
+| Constructor injection throughout | Makes all dependencies explicit and final; enables straightforward unit testing without a Spring context |
+| `@Scope("prototype")` on `CoffeeOrder` | Each `getBean` call returns a new, independent instance; prevents shared mutable state between concurrent orders |
+| `ApplicationEventPublisher` for Observer | Publisher has no compile-time dependency on any listener; adding or removing listeners requires no changes to the publisher |
+| `CoffeeShopFacade.placeOrder()` | Single entry point that drives all ten patterns in a defined sequence; client code is completely isolated from internal complexity |
+| `@PrePersist` for timestamp on `ChatMessage` | Timestamp assignment is a persistence concern, not a business concern; the entity manages its own lifecycle hook |
+| Daemon barista threads | JVM exits cleanly without waiting for blocked `queue.take()` calls; no explicit shutdown coordination needed |
+| Two separate SQLite tables | `messages` serves the legacy JDBC layer (Part 01) without modification; `chat_messages` serves the JPA layer (Part 03) independently, preserving backward compatibility across phases |
+| `mock-maker-subclass` in test resources | Mockito 5.x defaults to the inline mock maker, which requires unrestricted dynamic agent loading. Java 21+ restricts this by default. The subclass mock maker achieves the same mocking behavior without needing native access flags or `--add-opens` JVM arguments |
 
 ---
 
